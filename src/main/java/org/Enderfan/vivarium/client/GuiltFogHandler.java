@@ -24,9 +24,9 @@ public class GuiltFogHandler
         {
             int guilt = cap.getGuilt();
 
-            if (guilt > VivariumConfig.FOG_COLOR_THRESHOLD.get())
+            if (guilt > VivariumConfig.FOG_COLOR_MIN.get())
             {
-                float factor = Math.min(1.0f, (guilt - 500) / 1000.0f);
+                float factor = Math.min(1.0f, (float) (guilt - VivariumConfig.FOG_COLOR_MIN.get()) / VivariumConfig.FOG_COLOR_MAX.get());
 
                 float targetR = 0.6f;
                 float targetG = 0.0f;

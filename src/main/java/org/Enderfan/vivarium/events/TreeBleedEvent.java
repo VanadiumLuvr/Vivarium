@@ -12,6 +12,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
+import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.entities.BloodPoolEntity;
 import org.Enderfan.vivarium.entities.ModEntities;
 import org.Enderfan.vivarium.particles.ModParticles;
@@ -39,10 +40,10 @@ public class TreeBleedEvent
 
             if (state.is(BlockTags.LOGS))
             {
-                guilt.addGuilt(4);
+                guilt.addGuilt(VivariumConfig.GUILT_INC_LOG.get());
                 guilt.incrementLogsBroken();
 
-                if (guilt.getLogsBroken() >= 50 && !guilt.hasTriggeredFirstBleed())
+                if (guilt.getLogsBroken() >= (VivariumConfig.LOG_THRESHOLD.get() / VivariumConfig.PACE.get()) && !guilt.hasTriggeredFirstBleed())
                 {
                     treeBleed(level, event.getPos(), true);
 

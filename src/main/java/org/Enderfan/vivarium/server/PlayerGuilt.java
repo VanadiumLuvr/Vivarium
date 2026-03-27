@@ -53,7 +53,7 @@ public class PlayerGuilt
 
     public void incrementLogsBroken()
     {
-        this.logsBroken += VivariumConfig.PACE.get();
+        this.logsBroken++;
     }
 
     public boolean hasTriggeredFirstBleed()

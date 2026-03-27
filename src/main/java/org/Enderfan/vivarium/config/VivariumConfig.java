@@ -10,7 +10,8 @@ public class VivariumConfig
     // Define all our threshold variables
     public static final ForgeConfigSpec.IntValue WATER_DRIP_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue PACE;
-    public static final ForgeConfigSpec.IntValue FOG_COLOR_THRESHOLD;
+    public static final ForgeConfigSpec.IntValue FOG_COLOR_MIN;
+    public static final ForgeConfigSpec.IntValue FOG_COLOR_MAX;
     public static final ForgeConfigSpec.IntValue FOG_THICKNESS_MIN;
     public static final ForgeConfigSpec.IntValue FOG_THICKNESS_MAX;
     public static final ForgeConfigSpec.IntValue HOSTILE_WILDLIFE_THRESHOLD;
@@ -65,9 +66,13 @@ public class VivariumConfig
                 .comment("Guilt level required for dripping water to turn to blood.")
                 .defineInRange("waterDripThreshold", 1000, 0, 10000);
 
-        FOG_COLOR_THRESHOLD = BUILDER
+        FOG_COLOR_MIN = BUILDER
                 .comment("Guilt level required for fog to begin turning red")
-                .defineInRange("FogColorThreshold", 500, 0, 10000);
+                .defineInRange("FogColorMin", 500, 0, 10000);
+
+        FOG_COLOR_MAX = BUILDER
+                .comment("Guilt level required for fog to begin turning red")
+                .defineInRange("FogColorMax", 1000, 0, 10000);
 
         FOG_THICKNESS_MIN = BUILDER
                 .comment("Guilt level required for fog to begin thickening")

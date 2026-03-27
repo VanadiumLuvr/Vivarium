@@ -48,7 +48,7 @@ public class StormEvent
 
                 // 2. The Barrage: Custom Lightning Frequency
                 // If it is currently thundering and they have crossed the threshold, we call down the strikes manually.
-                if (currentGuilt >= 2000 && level.isThundering() && level instanceof ServerLevel serverLevel)
+                if (currentGuilt >= VivariumConfig.STORM_THRESHOLD.get() && level.isThundering() && level instanceof ServerLevel serverLevel)
                 {
                     // 10% chance every second to spawn a lightning strike near the player.
                     // This is vastly more frequent than vanilla Minecraft.

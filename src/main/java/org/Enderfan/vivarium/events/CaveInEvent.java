@@ -37,11 +37,10 @@ public class CaveInEvent {
 
             if (state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE))
             {
-                int increment = (int) (VivariumConfig.GUILT_INC_STONE.get() * VivariumConfig.PACE.get());
-                int threshold = VivariumConfig.STONE_THRESHOLD.get();
+                int threshold = (int) (VivariumConfig.STONE_THRESHOLD.get() / VivariumConfig.PACE.get());
                 boolean doTP = VivariumConfig.CAVE_IN_TELEPORT.get();
 
-                guilt.addGuilt(increment);
+                guilt.addGuilt(VivariumConfig.GUILT_INC_STONE.get());
 
                 CompoundTag persistentData = player.getPersistentData();
                 int stoneMined = persistentData.getInt("vivarium_stone_mined") + 1;

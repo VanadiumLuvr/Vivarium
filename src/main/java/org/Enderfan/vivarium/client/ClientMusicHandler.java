@@ -51,8 +51,8 @@ public class ClientMusicHandler
                         // Cap the math at 2500 so the pitch doesn't continue dropping into negative numbers
                         float effectiveGuilt = Math.min(VivariumConfig.MUSIC_PITCH_MAX.get(), currentGuilt);
 
-                        // Calculates how far along the 1400-2500 spectrum the player is (0.0 to 1.0)
-                        float dropFactor = (effectiveGuilt - VivariumConfig.MUSIC_PITCH_MIN.get()) / 1100.0f;
+                        float range = VivariumConfig.MUSIC_PITCH_MAX.get() - VivariumConfig.MUSIC_PITCH_MIN.get();
+                        float dropFactor = (effectiveGuilt - VivariumConfig.MUSIC_PITCH_MIN.get()) / range;
 
                         // Drops the pitch by a maximum of 30% (down to 0.7f)
                         double pitchMultiplier = 1.0 - (dropFactor * VivariumConfig.MUSIC_PITCH_FACTOR.get());
