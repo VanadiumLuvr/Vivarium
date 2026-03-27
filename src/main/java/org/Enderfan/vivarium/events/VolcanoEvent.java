@@ -63,16 +63,55 @@ public class VolcanoEvent
 
     private static void triggerRupture(ServerLevel level, ServerPlayer player)
     {
-        double distance = 50.0 + level.random.nextDouble() * 10.0;
-        double angle = level.random.nextDouble() * Math.PI * 2;
+        int searchRadius = 60;
+        int minRadiusSq = 30 * 30; // Keeps the explosion at least 30 blocks away from the player
+        int maxRadiusSq = searchRadius * searchRadius;
 
-        int x = net.minecraft.util.Mth.floor(player.getX() + Math.cos(angle) * distance);
-        int z = net.minecraft.util.Mth.floor(player.getZ() + Math.sin(angle) * distance);
+        int highestY = Integer.MIN_VALUE;
+        BlockPos center = null;
 
-        int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
-        BlockPos center = new BlockPos(x, y, z);
+        // 1. Scan a donut-shaped area around the player to find the absolute highest natural peak
+        for (int dx = -searchRadius; dx <= searchRadius; dx += 2)
+        {
+            for (int dz = -searchRadius; dz <= searchRadius; dz += 2)
+            {
+                int distSq = dx * dx + dz * dz;
+                if (distSq >= minRadiusSq && distSq <= maxRadiusSq)
+                {
+                    int x = player.getBlockX() + dx;
+                    int z = player.getBlockZ() + dz;
 
-        // 1. Launch the Debris (Expanded to a 5-block radius circle)
+                    // Switch to NO_LEAVES so the invisible laser passes right through tree canopies
+                    int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+
+                    // Grab the actual solid block immediately beneath the air (y - 1)
+                    BlockState surfaceBlock = level.getBlockState(new BlockPos(x, y - 1, z));
+
+                    // Only accept the coordinate if the block belongs to a natural terrain category
+                    boolean isNaturalTerrain = surfaceBlock.is(net.minecraft.tags.BlockTags.DIRT) ||
+                            surfaceBlock.is(net.minecraft.tags.BlockTags.SAND) ||
+                            surfaceBlock.is(net.minecraft.tags.BlockTags.BASE_STONE_OVERWORLD) ||
+                            surfaceBlock.is(net.minecraft.tags.BlockTags.TERRACOTTA) ||
+                            surfaceBlock.is(net.minecraft.world.level.block.Blocks.GRAVEL) ||
+                            surfaceBlock.is(net.minecraft.world.level.block.Blocks.SNOW_BLOCK);
+
+                    if (isNaturalTerrain && y > highestY)
+                    {
+                        highestY = y;
+                        center = new BlockPos(x, y, z);
+                    }
+                }
+            }
+        }
+
+        // Fallback safeguard in case they are standing in a void world or over an infinite ocean of glass
+        if (center == null)
+        {
+            center = player.blockPosition().offset(40, 0, 40);
+            center = new BlockPos(center.getX(), level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, center.getX(), center.getZ()), center.getZ());
+        }
+
+        // 2. Launch the Debris
         int debrisRadius = 5;
         for (int dx = -debrisRadius; dx <= debrisRadius; dx++)
         {
@@ -89,7 +128,7 @@ public class VolcanoEvent
                         flyingBlock.time = 1;
 
                         double mx = (level.random.nextDouble() - 0.5) * 0.8;
-                        double my = 1.0 + level.random.nextDouble() * 0.8; // Shoots much higher
+                        double my = 1.0 + level.random.nextDouble() * 0.8;
                         double mz = (level.random.nextDouble() - 0.5) * 0.8;
 
                         flyingBlock.setDeltaMovement(mx, my, mz);
@@ -99,12 +138,50 @@ public class VolcanoEvent
             }
         }
 
-        // 2. The Massive Explosion (7.0f is massive)
+        // ... Keep the debris launch code exactly the same ...
+        // 2. Launch the Debris
+        // ... [Your existing debris loop here] ...
+
+        // 3. The Massive Explosion
         level.explode(null, center.getX() + 0.5, center.getY(), center.getZ() + 0.5, 7.0f, Level.ExplosionInteraction.MOB);
 
-        // 3. The Boiling Lava Lake (Expanded to a 4-block radius circle, 3 blocks deep)
-        int lavaRadius = 4;
-        for (int yOffset = -4; yOffset <= -2; yOffset++)
+        // 4. The "Lavacast" Pedestal (The Ramp)
+        // We build a solid cone of magma and cobblestone that fills the crater and forms a bridge
+        // over the lip so the lava has a physical surface to flow outward on.
+        int ventRadius = 7; // Matches the explosion radius so it connects to the crater walls
+        for (int dx = -ventRadius; dx <= ventRadius; dx++)
+        {
+            for (int dz = -ventRadius; dz <= ventRadius; dz++)
+            {
+                double distanceSq = dx * dx + dz * dz;
+                if (distanceSq <= ventRadius * ventRadius)
+                {
+                    double distance = Math.sqrt(distanceSq);
+
+                    // Creates a slope: +2 height at the center, sloping down to -1 at the crater edges
+                    int topY = (int) (2.0 - (distance * 0.6));
+
+                    // Fill from the bottom of the explosion crater up to the slope height
+                    for (int yOffset = -8; yOffset <= topY; yOffset++)
+                    {
+                        BlockPos ventPos = center.offset(dx, yOffset, dz);
+
+                        // Mix cobblestone and magma blocks for a realistic volcanic crust
+                        BlockState crust = level.random.nextBoolean() ?
+                                net.minecraft.world.level.block.Blocks.MAGMA_BLOCK.defaultBlockState() :
+                                net.minecraft.world.level.block.Blocks.COBBLESTONE.defaultBlockState();
+
+                        level.setBlockAndUpdate(ventPos, crust);
+                    }
+                }
+            }
+        }
+
+        // 5. The Overflowing Lava Vent
+        // Because the pedestal is +2 blocks high in the center, placing lava here guarantees
+        // it will flow down the cobblestone slope and breach the crater walls.
+        int lavaRadius = 2;
+        for (int yOffset = 1; yOffset <= 3; yOffset++)
         {
             for (int dx = -lavaRadius; dx <= lavaRadius; dx++)
             {
@@ -119,7 +196,7 @@ public class VolcanoEvent
             }
         }
 
-        // 4. The Initial Smoke Burst (Swapped to SIGNAL_SMOKE)
+        // 6. The Initial Smoke Burst
         for (int i = 0; i < 300; i++)
         {
             double px = center.getX() + (level.random.nextDouble() - 0.5) * 4.0;
@@ -131,7 +208,7 @@ public class VolcanoEvent
                     1, 0.2, 0.5, 0.2, 0.05);
         }
 
-        // 5. Save the crater's coordinates to keep the smoke alive
-        player.getPersistentData().putIntArray("vivarium_rupture_pos", new int[]{center.getX(), center.getY() - 2, center.getZ()});
+        // 7. Save the crater's coordinates to keep the smoke alive
+        player.getPersistentData().putIntArray("vivarium_rupture_pos", new int[]{center.getX(), center.getY() + 3, center.getZ()});
     }
 }

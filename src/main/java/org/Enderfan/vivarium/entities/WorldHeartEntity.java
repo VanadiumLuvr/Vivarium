@@ -81,18 +81,16 @@ public class WorldHeartEntity extends Mob
     @Override
     public boolean hurt(DamageSource source, float amount)
     {
-        // DEBUG: If you hit it, this WILL print in your IntelliJ console
-        System.out.println("[WORLD HEART] Hurt method triggered by: " + source.getMsgId());
+        // 1. If it is already dead from a previous packet, ignore everything else!
+        if (this.isDeadOrDying()) return false;
 
         Entity attacker = source.getEntity();
 
         if (attacker instanceof Player player)
         {
-            System.out.println("[WORLD HEART] Attacker is Player: " + player.getScoreboardName());
 
             if (player.getMainHandItem().getItem() == ModItems.BLADE.get())
             {
-                System.out.println("[WORLD HEART] Player is holding the Blade! Executing kill.");
 
                 if (!this.level().isClientSide())
                 {
@@ -109,7 +107,6 @@ public class WorldHeartEntity extends Mob
             }
             else
             {
-                System.out.println("[WORLD HEART] Player punched it. Rejecting.");
 
                 if (!this.level().isClientSide())
                 {
@@ -136,13 +133,21 @@ public class WorldHeartEntity extends Mob
             Entity killer = cause.getEntity();
             String killerName = "an unknown force";
 
-            // SAFELY check if a player actually killed it to avoid NullPointerExceptions
             if (killer instanceof Player player)
             {
                 killerName = player.getScoreboardName();
 
                 player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(guilt ->
-                        guilt.setGuilt(Integer.MIN_VALUE));
+                {
+                    // 1. Set the server-side guilt to negative infinity
+                    guilt.setGuilt(Integer.MIN_VALUE);
+
+                    // 2. FORCE the client to update instantly so the fog/rain/sounds vanish
+                    if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
+                    {
+                        org.Enderfan.vivarium.server.ModMessages.sendToPlayer(new org.Enderfan.vivarium.server.GuiltSyncPacket(Integer.MIN_VALUE), serverPlayer);
+                    }
+                });
             }
 
             serverLevel.getServer().getPlayerList().broadcastSystemMessage(

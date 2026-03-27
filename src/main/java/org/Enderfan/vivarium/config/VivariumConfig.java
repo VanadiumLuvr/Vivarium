@@ -158,8 +158,8 @@ public class VivariumConfig
                 .defineInRange("carvingThreshold", 200, 0, 10000);
 
         CARVING_CHANCE = BUILDER
-                .comment("Chance of carvings appearing (1 = 100%)")
-                .defineInRange("carvingChance", 0.3, 0, 1);
+                .comment("Chance of carvings appearing per tick after staring at a block for 3 seconds (1 = 100%)")
+                .defineInRange("carvingChance", 0.1, 0, 1);
 
         BLOOD_RAIN_THRESHOLD = BUILDER
                 .comment("Guilt level when rain will turn red")

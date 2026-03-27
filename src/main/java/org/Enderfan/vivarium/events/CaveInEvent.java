@@ -37,7 +37,7 @@ public class CaveInEvent {
 
             if (state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE))
             {
-                int increment = (int) (VivariumConfig.GUILT_INC_STONE.get() + VivariumConfig.PACE.get());
+                int increment = (int) (VivariumConfig.GUILT_INC_STONE.get() * VivariumConfig.PACE.get());
                 int threshold = VivariumConfig.STONE_THRESHOLD.get();
                 boolean doTP = VivariumConfig.CAVE_IN_TELEPORT.get();
 

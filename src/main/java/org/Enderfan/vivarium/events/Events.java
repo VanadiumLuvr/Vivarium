@@ -211,7 +211,7 @@ public class Events
             }
 
             //this should cover a good few blocks i didnt think of
-            if(state.is(BlockTags.ENDERMAN_HOLDABLE))
+            if(state.is(BlockTags.ENDERMAN_HOLDABLE) && !state.is(Blocks.STONE)) // reject stone bc CaveInEvent handles adding guilt for that already
             {
                 guilt.addGuilt(VivariumConfig.GUILT_INC_MISC.get());
             }
