@@ -32,7 +32,6 @@ import org.Enderfan.vivarium.client.handlers.HallucinationHandler;
 import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.entities.ModEntities;
 import org.Enderfan.vivarium.events.*;
-import org.Enderfan.vivarium.fluid.ModFluids;
 import org.Enderfan.vivarium.item.ModCreativeModeTabs;
 import org.Enderfan.vivarium.item.ModItems;
 import org.Enderfan.vivarium.particles.ModParticles;
@@ -68,8 +67,8 @@ public class Vivarium
         ModStructures.register(modEventBus);
         ModItems.MOD_ITEMS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
-        ModFluids.FLUID_TYPES.register(modEventBus);
-        ModFluids.FLUIDS.register(modEventBus);
+        org.Enderfan.vivarium.fluid.ModFluids.FLUID_TYPES.register(modEventBus);
+        org.Enderfan.vivarium.fluid.ModFluids.FLUIDS.register(modEventBus);
         ModCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
         // === CLIENT SETUP ===

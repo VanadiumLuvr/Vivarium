@@ -8,7 +8,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.Enderfan.vivarium.Vivarium;
 import org.Enderfan.vivarium.block.ModBlocks;
-import org.Enderfan.vivarium.fluid.ModFluids;
 
 public class ModCreativeModeTabs
 {
@@ -25,6 +24,7 @@ public class ModCreativeModeTabs
                         // Add your items in the exact order you want them to appear
                         output.accept(ModItems.BLADE.get());
                         output.accept(ModItems.BLOOD_BUCKET.get());
+                        // If you have a Vitaflower block item, add it here too!
                         output.accept(ModBlocks.VITAFLOWER.get());
                     })
                     .build());
