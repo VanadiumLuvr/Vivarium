@@ -1,0 +1,32 @@
+{
+  "blood_drone":
+  {
+    "sounds":
+    [
+      "vivarium:blood_drone"
+    ]
+  },
+
+  "gore1":
+  {
+    "sounds":
+    [
+      "vivarium:gore1"
+    ]
+  },
+
+  "heartbeat": {
+    "sounds": [ "vivarium:heartbeat" ]
+  },
+
+  "sacrifice":
+  {
+    "sounds": [ "vivarium:sacrifice" ]
+  },
+
+  "crying":
+  {
+    "sounds": ["vivarium:crying"]
+  }
+
+}

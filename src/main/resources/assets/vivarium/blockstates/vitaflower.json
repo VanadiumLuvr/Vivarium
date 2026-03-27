@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "state=0": { "model": "vivarium:block/vitaflower_open" },
+    "state=1": { "model": "vivarium:block/vitaflower_closed" },
+    "state=2": { "model": "vivarium:block/vitaflower_wilted" }
+  }
+}

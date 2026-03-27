@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "vivarium:world_heart",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 100,
+    "separation": 50,
+    "salt": 6661337,
+    "spread_type": "linear"
+  }
+}
