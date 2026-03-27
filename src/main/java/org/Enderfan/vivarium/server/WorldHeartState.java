@@ -20,6 +20,12 @@ public class WorldHeartState extends SavedData
         this.setDirty(); // tells the game to save this to the hard drive
     }
 
+    public void setWorldDead(boolean dead)
+    {
+        this.isWorldDead = dead;
+        this.setDirty(); // tells the game to save this to the hard drive
+    }
+
     // reads the nbt file when the world loads
     public static WorldHeartState load(CompoundTag tag)
     {

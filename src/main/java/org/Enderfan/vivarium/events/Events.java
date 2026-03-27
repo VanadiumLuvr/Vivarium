@@ -67,6 +67,72 @@ public class Events
                                             return setGuilt(context.getSource(), EntityArgument.getPlayer(context, "target"), IntegerArgumentType.getInteger(context, "value"));
                                         }))))
         );
+
+        event.getDispatcher().register(Commands.literal("vivarium")
+                .requires(source -> source.hasPermission(2)) // Requires OP / Cheats
+
+                .then(Commands.literal("forceTreeBleed")
+                        .executes(context ->
+                        {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            TreeBleedEvent.treeBleed(player.level(), player.blockPosition(), true);
+                            context.getSource().sendSuccess(() -> Component.literal("Forced Tree Bleed"), true);
+                            return 1;
+                        }))
+
+                .then(Commands.literal("forceCaveIn")
+                        .executes(context ->
+                        {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            ServerLevel level = context.getSource().getLevel();
+
+                            // Manually simulate the cinematic triggers
+                            level.playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.WITHER_BREAK_BLOCK, SoundSource.BLOCKS, 2.0f, 0.5f);
+                            TreeBleedEvent.treeBleed(level, player.blockPosition(), false);
+                            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.BLINDNESS, 100, 0, true, false, false));
+
+                            CaveInEvent.triggerCaveIn(level, player.blockPosition());
+                            player.getPersistentData().putInt("vivarium_collapse_timer", 30);
+
+                            context.getSource().sendSuccess(() -> Component.literal("Forced Cinematic Cave In"), true);
+                            return 1;
+                        }))
+
+                .then(Commands.literal("forceEruption")
+                        .executes(context ->
+                        {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            VolcanoEvent.triggerRupture(context.getSource().getLevel(), player);
+                            context.getSource().sendSuccess(() -> Component.literal("Forced Volcano Eruption"), true);
+                            return 1;
+                        }))
+
+                .then(Commands.literal("forceDream")
+                        .executes(context ->
+                        {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            // Uses their current standing position as the "bed" to return to
+                            DreamEvent.forceDreamSequence(player, player.blockPosition());
+                            context.getSource().sendSuccess(() -> Component.literal("Forced Dream Sequence"), true);
+                            return 1;
+                        }))
+
+                .then(Commands.literal("worldHeartState")
+                        .then(Commands.literal("alive")
+                                .executes(context ->
+                                {
+                                    WorldHeartState.get(context.getSource().getLevel()).setWorldDead(false);
+                                    context.getSource().sendSuccess(() -> Component.literal("World Heart is now ALIVE"), true);
+                                    return 1;
+                                }))
+                        .then(Commands.literal("dead")
+                                .executes(context ->
+                                {
+                                    WorldHeartState.get(context.getSource().getLevel()).setWorldDead(true);
+                                    context.getSource().sendSuccess(() -> Component.literal("World Heart is now DEAD"), true);
+                                    return 1;
+                                })))
+        );
     }
 
     private static int getGuilt(CommandSourceStack source, Player player)

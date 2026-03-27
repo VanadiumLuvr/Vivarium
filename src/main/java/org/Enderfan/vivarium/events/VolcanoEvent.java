@@ -61,7 +61,7 @@ public class VolcanoEvent
         }
     }
 
-    private static void triggerRupture(ServerLevel level, ServerPlayer player)
+    public static void triggerRupture(ServerLevel level, ServerPlayer player)
     {
         int searchRadius = 60;
         int minRadiusSq = 30 * 30; // Keeps the explosion at least 30 blocks away from the player

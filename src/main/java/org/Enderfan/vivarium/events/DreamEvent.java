@@ -47,52 +47,6 @@ public class DreamEvent {
                     "Unless you use this..."
             };
 
-    @SubscribeEvent
-    public static void onPlayerSleep(PlayerSleepInBedEvent event)
-    {
-        if (event.getEntity() instanceof ServerPlayer player && player.level() instanceof ServerLevel serverLevel)
-        {
-
-            player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap ->
-            {
-                if (cap.getGuilt() >= VivariumConfig.DREAM_THRESHOLD.get() && !cap.hasDreamt())
-                {
-                    // 1. stop them from actually sleeping
-                    event.setResult(Player.BedSleepingProblem.OTHER_PROBLEM);
-
-                    // 2. mark the event as completed so they don't get trapped in a loop
-                    cap.hasDreamt = true;
-
-                    // 3. save their inventory to their persistent NBT, then wipe it
-                    ListTag savedInv = new ListTag();
-                    player.getInventory().save(savedInv);
-                    player.getPersistentData().put("vivarium_saved_inv", savedInv);
-
-                    // save their bed location so we know where to drop the sword later
-                    player.getPersistentData().putLong("vivarium_bed_pos", event.getPos().asLong());
-
-                    player.getPersistentData().putInt("vivarium_dream_start_z", player.getBlockZ());
-                    player.getPersistentData().putInt("vivarium_dream_stage", 0);
-
-                    player.getInventory().clearContent();
-
-                    // 4. teleport them to the skybox (Y = 310)
-                    BlockPos dreamStart = new BlockPos(player.getBlockX(), 310, player.getBlockZ());
-                    player.teleportTo(dreamStart.getX() + 0.5, dreamStart.getY(), dreamStart.getZ() + 0.5);
-
-                    // SAVE THE 3D POSITION HERE
-                    player.getPersistentData().putLong("vivarium_dream_pos", dreamStart.asLong());
-
-                    // sends the black fade packet
-                    ModMessages.sendToPlayer(new DreamFadePacket(false), player);
-
-                    // 5. generate the hallway
-                    buildRibcageHallway(serverLevel, dreamStart);
-                }
-            });
-        }
-    }
-
     private static void buildRibcageHallway(ServerLevel level, BlockPos startPos)
     {
         int length = 160;
@@ -264,6 +218,50 @@ public class DreamEvent {
                     ModMessages.sendToPlayer(new DreamFadePacket(true), player);
                 }
             }
+        }
+    }
+
+    // ADD THIS NEW METHOD
+    public static void forceDreamSequence(ServerPlayer player, BlockPos returnPos)
+    {
+        ServerLevel serverLevel = (ServerLevel) player.level();
+
+        player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap -> cap.hasDreamt = true);
+
+        net.minecraft.nbt.ListTag savedInv = new net.minecraft.nbt.ListTag();
+        player.getInventory().save(savedInv);
+        player.getPersistentData().put("vivarium_saved_inv", savedInv);
+
+        // We use the passed-in returnPos instead of forcing an event.getPos()
+        player.getPersistentData().putLong("vivarium_bed_pos", returnPos.asLong());
+        player.getPersistentData().putInt("vivarium_dream_start_z", player.getBlockZ());
+        player.getPersistentData().putInt("vivarium_dream_stage", 0);
+
+        player.getInventory().clearContent();
+
+        BlockPos dreamStart = new BlockPos(player.getBlockX(), 310, player.getBlockZ());
+        player.teleportTo(dreamStart.getX() + 0.5, dreamStart.getY(), dreamStart.getZ() + 0.5);
+
+        player.getPersistentData().putLong("vivarium_dream_pos", dreamStart.asLong());
+
+        ModMessages.sendToPlayer(new DreamFadePacket(false), player);
+        buildRibcageHallway(serverLevel, dreamStart);
+    }
+
+    // THEN UPDATE YOUR BED EVENT TO JUST CALL IT
+    @SubscribeEvent
+    public static void onPlayerSleep(PlayerSleepInBedEvent event)
+    {
+        if (event.getEntity() instanceof ServerPlayer player && player.level() instanceof ServerLevel serverLevel)
+        {
+            player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap ->
+            {
+                if (cap.getGuilt() >= VivariumConfig.DREAM_THRESHOLD.get() && !cap.hasDreamt())
+                {
+                    event.setResult(Player.BedSleepingProblem.OTHER_PROBLEM);
+                    forceDreamSequence(player, event.getPos());
+                }
+            });
         }
     }
 }
