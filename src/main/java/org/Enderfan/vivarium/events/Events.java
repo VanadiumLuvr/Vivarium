@@ -7,6 +7,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -217,6 +218,25 @@ public class Events
         if (event.getOriginal().getPersistentData().contains("vivarium_cleansing_guilt"))
         {
             event.getEntity().getPersistentData().putBoolean("vivarium_cleansing_guilt", true);
+        }
+
+        // Rescue the cleansing tag...
+        if (event.getOriginal().getPersistentData().contains("vivarium_cleansing_guilt"))
+        {
+            event.getEntity().getPersistentData().putBoolean("vivarium_cleansing_guilt", true);
+        }
+
+        // ADD THIS: Rescue the Dream Sequence tags so their inventory isn't deleted if they die in the skybox!
+        CompoundTag oldData = event.getOriginal().getPersistentData();
+        CompoundTag newData = event.getEntity().getPersistentData();
+
+        if (oldData.contains("vivarium_saved_inv"))
+        {
+            newData.put("vivarium_saved_inv", oldData.get("vivarium_saved_inv"));
+            newData.putLong("vivarium_bed_pos", oldData.getLong("vivarium_bed_pos"));
+            newData.putInt("vivarium_dream_start_z", oldData.getInt("vivarium_dream_start_z"));
+            newData.putInt("vivarium_dream_stage", oldData.getInt("vivarium_dream_stage"));
+            newData.putLong("vivarium_dream_pos", oldData.getLong("vivarium_dream_pos"));
         }
     }
 

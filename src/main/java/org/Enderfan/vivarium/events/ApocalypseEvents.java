@@ -81,49 +81,44 @@ public class ApocalypseEvents
             ServerPlayer serverPlayer = (ServerPlayer) event.player;
             boolean isSpectator = serverPlayer.gameMode.getGameModeForPlayer() == GameType.SPECTATOR;
 
-            if (WorldHeartState.get(serverLevel).isWorldDead() && !isSpectator)
-            {
-                BlockPos pos = event.player.blockPosition();
-                int radius = 4; // how far out the rot spreads around them
-
-                // scan a box around the player
-                for (int x = -radius; x <= radius; x++)
+            if (WorldHeartState.get(serverLevel).isWorldDead() && !isSpectator) {
+                if (serverPlayer.tickCount % 20 == 0)
                 {
-                    for (int y = -2; y <= 2; y++) // check slightly above and below their feet
-                    {
-                        for (int z = -radius; z <= radius; z++)
+                    BlockPos pos = event.player.blockPosition();
+                    int radius = 4; // how far out the rot spreads around them
+
+                    // scan a box around the player
+                    for (int x = -radius; x <= radius; x++) {
+                        for (int y = -2; y <= 2; y++) // check slightly above and below their feet
                         {
-                            BlockPos targetPos = pos.offset(x, y, z);
+                            for (int z = -radius; z <= radius; z++) {
+                                BlockPos targetPos = pos.offset(x, y, z);
 
-                            // is it grass?
-                            if (serverLevel.getBlockState(targetPos).is(Blocks.GRASS_BLOCK))
-                            {
-                                // 1% chance to decay per tick so it looks like it's spreading naturally
-                                // instead of just deleting the chunk instantly
-                                if (serverLevel.random.nextFloat() < 0.01f)
-                                {
-                                    serverLevel.setBlockAndUpdate(targetPos, Blocks.DIRT.defaultBlockState());
+                                // is it grass?
+                                if (serverLevel.getBlockState(targetPos).is(Blocks.GRASS_BLOCK)) {
+                                    // 1% chance to decay per tick so it looks like it's spreading naturally
+                                    // instead of just deleting the chunk instantly
+                                    if (serverLevel.random.nextFloat() < 0.2f) {
+                                        serverLevel.setBlockAndUpdate(targetPos, Blocks.DIRT.defaultBlockState());
+                                    }
                                 }
-                            }
 
-                            //destroys leaves and grass & shi
-                            if(serverLevel.getBlockState(targetPos).is(BlockTags.LEAVES) ||
-                                    serverLevel.getBlockState(targetPos).is(Blocks.TALL_GRASS) ||
-                                    serverLevel.getBlockState(targetPos).is(Blocks.GRASS) ||
-                                    serverLevel.getBlockState(targetPos).is(Blocks.FERN) ||
-                                    serverLevel.getBlockState(targetPos).is(Blocks.LARGE_FERN) ||
-                                    serverLevel.getBlockState(targetPos).is(Blocks.KELP_PLANT))
-                            {
-                                if (serverLevel.random.nextFloat() < 0.01f)
-                                {
-                                    serverLevel.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
+                                //destroys leaves and grass & shi
+                                if (serverLevel.getBlockState(targetPos).is(BlockTags.LEAVES) ||
+                                        serverLevel.getBlockState(targetPos).is(Blocks.TALL_GRASS) ||
+                                        serverLevel.getBlockState(targetPos).is(Blocks.GRASS) ||
+                                        serverLevel.getBlockState(targetPos).is(Blocks.FERN) ||
+                                        serverLevel.getBlockState(targetPos).is(Blocks.LARGE_FERN) ||
+                                        serverLevel.getBlockState(targetPos).is(Blocks.KELP_PLANT)) {
+                                    if (serverLevel.random.nextFloat() < 0.2f) {
+                                        serverLevel.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
+                                    }
                                 }
-                            }
 
-                            if(serverLevel.getBlockState(targetPos).is(BlockTags.FLOWERS)){
-                                if (serverLevel.random.nextFloat() < 0.01f)
-                                {
-                                    serverLevel.destroyBlock(targetPos, false);
+                                if (serverLevel.getBlockState(targetPos).is(BlockTags.FLOWERS)) {
+                                    if (serverLevel.random.nextFloat() < 0.2f) {
+                                        serverLevel.destroyBlock(targetPos, false);
+                                    }
                                 }
                             }
                         }

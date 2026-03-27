@@ -38,7 +38,18 @@ public class PlayerGuilt
 
     public void saveNBTData(CompoundTag nbt)
     {
-        nbt.putInt("guilt", guilt);
+        nbt.putInt("guilt", this.guilt);
+        nbt.putInt("logsBroken", this.logsBroken);
+        nbt.putBoolean("firstBleed", this.hasTriggeredFirstBleed);
+        nbt.putBoolean("hasDreamt", this.hasDreamt);
+    }
+
+    public void loadNBTData(CompoundTag nbt)
+    {
+        this.guilt = nbt.getInt("guilt");
+        this.logsBroken = nbt.getInt("logsBroken");
+        this.hasTriggeredFirstBleed = nbt.getBoolean("firstBleed");
+        this.hasDreamt = nbt.getBoolean("hasDreamt");
     }
 
     public int getLogsBroken()
@@ -66,8 +77,4 @@ public class PlayerGuilt
         this.hasTriggeredFirstBleed = value;
     }
 
-    public void loadNBTData(CompoundTag nbt)
-    {
-        this.guilt = nbt.getInt("guilt");
-    }
 }
