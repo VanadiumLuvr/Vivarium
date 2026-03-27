@@ -17,9 +17,15 @@ public class VivariumConfigScreen extends Screen
     private final Screen parent;
     private double scrollOffset = 0;
     private int totalContentHeight = 0;
-    private Button saveButton;
 
-    // This list maps the physical screen widget to the actual Forge config variable
+    // We store these so we can render them outside the scissor mask on Page 1
+    private Button saveButton;
+    private Button backButton;
+    private Button advancedButton;
+
+    // 0 = Basic Pace Page, 1 = Advanced Spoilers Page
+    private int currentPage = 0;
+
     private final List<ConfigEntry> configWidgets = new ArrayList<>();
 
     public VivariumConfigScreen(Screen parent)
@@ -31,12 +37,49 @@ public class VivariumConfigScreen extends Screen
     @Override
     protected void init()
     {
+        // Wipe the screen clean before building the current page
+        this.clearWidgets();
         this.configWidgets.clear();
+
+        if (this.currentPage == 0)
+        {
+            this.buildBasicPage();
+        }
+        else
+        {
+            this.buildAdvancedPage();
+        }
+    }
+
+    private void buildBasicPage()
+    {
+        // Put the pace input right below the warning text
+        int startY = this.height / 2 + 10;
+
+        this.addDoubleInput("Mod Pace", "Overarching multiplier that will increase/decrease the speed of happenings", VivariumConfig.PACE, startY, 24);
+
+        this.advancedButton = Button.builder(Component.literal("Advanced Settings (Spoilers)"), button ->
+        {
+            this.saveAll(); // Save the pace before destroying the page
+            this.currentPage = 1;
+            this.scrollOffset = 0;
+            this.rebuildWidgets();
+        }).bounds(this.width / 2 - 100, this.height - 60, 200, 20).build();
+
+        this.saveButton = Button.builder(Component.literal("Save & Close"), button ->
+        {
+            this.saveAll();
+            this.minecraft.setScreen(this.parent);
+        }).bounds(this.width / 2 - 100, this.height - 30, 200, 20).build();
+
+        this.addRenderableWidget(this.advancedButton);
+        this.addRenderableWidget(this.saveButton);
+    }
+
+    private void buildAdvancedPage()
+    {
         int startY = 30;
         int spacing = 24;
-
-        // --- Mod Pace ---
-        startY = this.addDoubleInput("Mod Pace", "Overarching multiplier that will increase/decrease the speed of happenings", VivariumConfig.PACE, startY, spacing);
 
         // --- Guilt Thresholds ---
         startY = this.addIntInput("Water Drip Threshold", "Guilt level required for dripping water to turn to blood.", VivariumConfig.WATER_DRIP_THRESHOLD, startY, spacing);
@@ -82,21 +125,31 @@ public class VivariumConfigScreen extends Screen
         // --- Ecosystem Settings ---
         startY = this.addIntInput("Butterfly Starvation Time", "Time in ticks (20 ticks = 1 second) before a butterfly begins to starve without a Vitaflower.", VivariumConfig.BUTTERFLY_STARVATION_TIME, startY, spacing);
 
-        // Calculate the absolute bottom of our scrolling list
+
         this.totalContentHeight = startY + 20;
 
-        // The fixed Save & Close Button that stays at the bottom of the screen
+        // Split the bottom row into two buttons
+        this.backButton = Button.builder(Component.literal("Back to Basic"), button ->
+        {
+            this.saveAll(); // Save all the advanced fields before destroying the page
+            this.currentPage = 0;
+            this.scrollOffset = 0;
+            this.rebuildWidgets();
+        }).bounds(this.width / 2 - 105, this.height - 30, 100, 20).build();
+
         this.saveButton = Button.builder(Component.literal("Save & Close"), button ->
         {
             this.saveAll();
             this.minecraft.setScreen(this.parent);
-        }).bounds(this.width / 2 - 100, this.height - 30, 200, 20).build();
+        }).bounds(this.width / 2 + 5, this.height - 30, 100, 20).build();
 
+        this.addRenderableWidget(this.backButton);
         this.addRenderableWidget(this.saveButton);
+
         this.updateWidgetPositions();
     }
 
-    // --- HELPER METHODS ---
+// --- HELPER METHODS ---
 
     private int addIntInput(String label, String tooltip, ForgeConfigSpec.IntValue config, int y, int spacing)
     {
@@ -183,45 +236,64 @@ public class VivariumConfigScreen extends Screen
         }
     }
 
+
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
     {
         this.renderBackground(graphics);
 
-        // 1. Turn on the scissors! Only allow pixels between the top bar (Y=25) and bottom bar (Y=height-40)
-        graphics.enableScissor(0, 25, this.width, this.height - 40);
-
-        // Draw the text labels on the left side
-        for (ConfigEntry entry : this.configWidgets)
+        if (this.currentPage == 0)
         {
-            int drawY = entry.originalY - (int) this.scrollOffset;
-            graphics.drawString(this.font, entry.label, this.width / 2 - 140, drawY + 6, 0xFFFFFF, false);
+            // --- PAGE 0: BASIC RENDERING ---
+            graphics.drawCenteredString(this.font, this.title, this.width / 2, 8, 0xFFFFFF);
+
+            // Draw the context and warnings
+            graphics.drawCenteredString(this.font, "Mod Pace acts as a global multiplier for all events.", this.width / 2, 50, 0xFFFFFF);
+            graphics.drawCenteredString(this.font, "Increase it to make events happen faster, decrease to slow them down.", this.width / 2, 65, 0xAAAAAA);
+
+            graphics.drawCenteredString(this.font, "WARNING: The next page contains major spoilers for the mod's progression.", this.width / 2, 100, 0xFF5555); // Red text
+            graphics.drawCenteredString(this.font, "It is highly recommended not to change Pace and specific thresholds at the same time.", this.width / 2, 115, 0xFF5555);
+
+            for (ConfigEntry entry : this.configWidgets)
+            {
+                graphics.drawString(this.font, entry.label, this.width / 2 - 140, entry.originalY + 6, 0xFFFFFF, false);
+            }
+
+            // Draw the buttons and text boxes normally, no scissors needed
+            super.render(graphics, mouseX, mouseY, partialTick);
         }
+        else
+        {
+            // --- PAGE 1: ADVANCED SCROLLING RENDERING ---
+            graphics.enableScissor(0, 25, this.width, this.height - 40);
 
-        // Draw the text boxes and buttons (they will be cleanly sliced at the scissor borders)
-        super.render(graphics, mouseX, mouseY, partialTick);
+            for (ConfigEntry entry : this.configWidgets)
+            {
+                int drawY = entry.originalY - (int) this.scrollOffset;
+                graphics.drawString(this.font, entry.label, this.width / 2 - 140, drawY + 6, 0xFFFFFF, false);
+            }
 
-        // 2. Turn the scissors OFF so we can draw the rest of the UI
-        graphics.disableScissor();
+            super.render(graphics, mouseX, mouseY, partialTick);
+            graphics.disableScissor();
 
-        // Draw the solid black borders
-        graphics.fill(0, 0, this.width, 25, 0xFF000000);
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, 8, 0xFFFFFF);
-        graphics.fill(0, this.height - 40, this.width, this.height, 0xFF000000);
+            // Draw the solid black borders
+            graphics.fill(0, 0, this.width, 25, 0xFF000000);
+            graphics.drawCenteredString(this.font, "Advanced Configuration", this.width / 2, 8, 0xFFFFFF);
+            graphics.fill(0, this.height - 40, this.width, this.height, 0xFF000000);
 
-        // Because super.render() was scissored, our Save button got completely chopped off!
-        // We manually render it one more time down here so it shows up on top of the bottom border.
-        this.saveButton.render(graphics, mouseX, mouseY, partialTick);
+            // Re-render the bottom buttons so they don't get chopped off by the scissor
+            this.backButton.render(graphics, mouseX, mouseY, partialTick);
+            this.saveButton.render(graphics, mouseX, mouseY, partialTick);
+        }
 
         // --- DRAW TOOLTIPS ON HOVER ---
         for (ConfigEntry entry : this.configWidgets)
         {
             int drawY = entry.originalY - (int) this.scrollOffset;
 
-            // Only trigger tooltips if the row is visible between the borders
+            // Only trigger tooltips if the row is visible
             if (drawY > 25 && drawY < this.height - 40)
             {
-                // If the mouse is hovering over the row
                 if (mouseY >= drawY && mouseY <= drawY + 20 && mouseX > this.width / 2 - 150 && mouseX < this.width / 2 + 120)
                 {
                     graphics.renderTooltip(this.font, Component.literal(entry.tooltip), mouseX, mouseY);
