@@ -75,8 +75,14 @@ public class Events
                         .executes(context ->
                         {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            TreeBleedEvent.treeBleed(player.level(), player.blockPosition(), true);
-                            context.getSource().sendSuccess(() -> Component.literal("Forced Tree Bleed"), true);
+
+                            player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap ->
+                            {
+                                cap.setLogsBroken(VivariumConfig.LOG_THRESHOLD.get());
+                                cap.setTriggeredFirstBleed(false);
+                            });
+
+                            context.getSource().sendSuccess(() -> Component.literal("Primed Tree Bleed. Break 1 more log."), true);
                             return 1;
                         }))
 

@@ -46,6 +46,11 @@ public class PlayerGuilt
         return logsBroken;
     }
 
+    public void setLogsBroken(int value)
+    {
+        this.logsBroken = value;
+    }
+
     public void incrementLogsBroken()
     {
         this.logsBroken += VivariumConfig.PACE.get();
