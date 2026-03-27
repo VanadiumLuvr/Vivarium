@@ -83,7 +83,8 @@ public class VivariumConfigScreen extends Screen
 
         // --- Guilt Thresholds ---
         startY = this.addIntInput("Water Drip Threshold", "Guilt level required for dripping water to turn to blood.", VivariumConfig.WATER_DRIP_THRESHOLD, startY, spacing);
-        startY = this.addIntInput("Fog Color Threshold", "Guilt level required for fog to begin turning red", VivariumConfig.FOG_COLOR_THRESHOLD, startY, spacing);
+        startY = this.addIntInput("Fog Color Min", "Guilt level required for fog to begin turning red", VivariumConfig.FOG_COLOR_MIN, startY, spacing);
+        startY = this.addIntInput("Fog Color Max", "Guilt level required for fog to finish turning red", VivariumConfig.FOG_COLOR_MAX, startY, spacing);
         startY = this.addIntInput("Fog Thickness Min", "Guilt level required for fog to begin thickening", VivariumConfig.FOG_THICKNESS_MIN, startY, spacing);
         startY = this.addIntInput("Fog Thickness Max", "Guilt level required for fog to finish thickening", VivariumConfig.FOG_THICKNESS_MAX, startY, spacing);
         startY = this.addIntInput("Hostile Wildlife Threshold", "Guilt level required for neutral mobs to become permanently hostile.", VivariumConfig.HOSTILE_WILDLIFE_THRESHOLD, startY, spacing);

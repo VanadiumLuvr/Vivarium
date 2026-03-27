@@ -13,6 +13,7 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import org.Enderfan.vivarium.entities.ModEntities;
 import org.Enderfan.vivarium.entities.WorldHeartEntity;
+import org.Enderfan.vivarium.fluid.ModFluids;
 
 public class WorldHeartPiece extends StructurePiece
 {
@@ -65,7 +66,7 @@ public class WorldHeartPiece extends StructurePiece
                     {
                         BlockPos current = center.offset(x, y, z);
                         // 2 is the flag for "don't update neighbors" so it doesn't lag out
-                        level.setBlock(current, Blocks.WATER.defaultBlockState(), 2);
+                        level.setBlock(current, ModFluids.SOURCE_BLOOD.get().defaultFluidState().createLegacyBlock(), 2);
                     }
                 }
             }

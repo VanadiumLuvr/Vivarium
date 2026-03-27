@@ -12,4 +12,8 @@ public class ModItems {
     public static final RegistryObject<Item> BLADE = MOD_ITEMS.register("blade",
             () -> new BladeItem(new Item.Properties()));
 
+    public static final RegistryObject<net.minecraft.world.item.Item> BLOOD_BUCKET = MOD_ITEMS.register("blood_bucket",
+            () -> new net.minecraft.world.item.BucketItem(org.Enderfan.vivarium.fluid.ModFluids.SOURCE_BLOOD,
+                    new net.minecraft.world.item.Item.Properties().craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)));
+
 }

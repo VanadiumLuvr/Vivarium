@@ -25,6 +25,10 @@ public class ModBlocks
     public static final RegistryObject<Block> VITAFLOWER = registerBlock("vitaflower",
             () -> new VitaflowerBlock(BlockBehaviour.Properties.copy(Blocks.POPPY).noOcclusion().noCollission()));
 
+    public static final RegistryObject<net.minecraft.world.level.block.LiquidBlock> BLOOD_BLOCK = BLOCKS.register("blood",
+            () -> new net.minecraft.world.level.block.LiquidBlock(org.Enderfan.vivarium.fluid.ModFluids.SOURCE_BLOOD,
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.WATER).noLootTable().liquid()));
+
     // Helper method that registers the block AND its inventory item at the same time
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

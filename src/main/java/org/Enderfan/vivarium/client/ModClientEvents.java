@@ -27,4 +27,6 @@ public class ModClientEvents
         event.registerLayerDefinition(ButterflyModel.LAYER_LOCATION, ButterflyModel::createBodyLayer);
     }
 
+
+
 }

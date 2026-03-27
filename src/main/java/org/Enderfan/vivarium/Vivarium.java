@@ -66,6 +66,8 @@ public class Vivarium
         ModStructures.register(modEventBus);
         ModItems.MOD_ITEMS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
+        org.Enderfan.vivarium.fluid.ModFluids.FLUID_TYPES.register(modEventBus);
+        org.Enderfan.vivarium.fluid.ModFluids.FLUIDS.register(modEventBus);
 
         // === CLIENT SETUP ===
         modEventBus.addListener(ClientSetup::onClientSetup);
