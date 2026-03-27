@@ -1,5 +1,6 @@
 {
   "item.vivarium.blade": "Immortal Slaying Blade",
   "block.vivarium.vitaflower": "Vitaflower",
-  "entity.vivarium.butterfly": "Butterfly"
+  "entity.vivarium.butterfly": "Butterfly",
+  "creativetab.vivarium_tab": "Vivarium"
 }
