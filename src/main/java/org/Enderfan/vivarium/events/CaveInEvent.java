@@ -16,8 +16,9 @@ import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
 import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.server.GuiltProvider;
-import org.Enderfan.vivarium.server.GuiltSyncPacket;
+import org.Enderfan.vivarium.server.packets.GuiltSyncPacket;
 import org.Enderfan.vivarium.server.ModMessages;
+import org.Enderfan.vivarium.server.packets.CaveInBlinkPacket;
 
 @Mod.EventBusSubscriber(modid = Vivarium.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CaveInEvent {
@@ -190,7 +191,7 @@ public class CaveInEvent {
         }
 
         // TRIGGER THE BLACKOUT MASK
-        org.Enderfan.vivarium.server.ModMessages.sendToPlayer(new org.Enderfan.vivarium.server.CaveInBlinkPacket(), player);
+        org.Enderfan.vivarium.server.ModMessages.sendToPlayer(new CaveInBlinkPacket(), player);
 
         // 4. Snap the player to the exact center of the new box, keeping their camera angle exactly the same
         player.teleportTo(newPos.getX() + 0.5, newPos.getY(), newPos.getZ() + 0.5);

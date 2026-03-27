@@ -1,16 +1,15 @@
 package org.Enderfan.vivarium.client;
 
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.Enderfan.vivarium.Vivarium;
+import org.Enderfan.vivarium.client.renderers.BloodPoolRenderer;
+import org.Enderfan.vivarium.client.renderers.WorldHeartRenderer;
 import org.Enderfan.vivarium.entities.ModEntities;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.entities.WorldHeartModel;
-import org.Enderfan.vivarium.item.ModItems;
 import org.Enderfan.vivarium.particles.BloodDripParticle;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import org.Enderfan.vivarium.particles.ModParticles;

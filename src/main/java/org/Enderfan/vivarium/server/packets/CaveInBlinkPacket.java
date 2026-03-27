@@ -1,7 +1,9 @@
-package org.Enderfan.vivarium.server;
+package org.Enderfan.vivarium.server.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
+import org.Enderfan.vivarium.client.renderers.BlinkOverlayRenderer;
+
 import java.util.function.Supplier;
 
 public class CaveInBlinkPacket
@@ -19,7 +21,7 @@ public class CaveInBlinkPacket
         {
             if (context.getDirection().getReceptionSide().isClient())
             {
-                org.Enderfan.vivarium.client.BlinkOverlayRenderer.triggerBlink();
+                BlinkOverlayRenderer.triggerBlink();
             }
         });
         context.setPacketHandled(true);

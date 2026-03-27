@@ -1,10 +1,10 @@
-package org.Enderfan.vivarium.server;
+package org.Enderfan.vivarium.server.packets;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import org.Enderfan.vivarium.client.BloodArrowRenderer;
+import org.Enderfan.vivarium.client.renderers.BloodArrowRenderer;
 
 import java.util.function.Supplier;
 

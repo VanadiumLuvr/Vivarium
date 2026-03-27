@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.renderers;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

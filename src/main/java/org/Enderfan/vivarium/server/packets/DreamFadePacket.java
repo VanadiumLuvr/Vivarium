@@ -1,7 +1,9 @@
-package org.Enderfan.vivarium.server;
+package org.Enderfan.vivarium.server.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
+import org.Enderfan.vivarium.client.renderers.DreamFadeRenderer;
+
 import java.util.function.Supplier;
 
 public class DreamFadePacket
@@ -31,7 +33,7 @@ public class DreamFadePacket
             net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT, () -> () ->
             {
                 // Tells the client renderer to start the effect
-                org.Enderfan.vivarium.client.DreamFadeRenderer.triggerFade(this.isWhite);
+                DreamFadeRenderer.triggerFade(this.isWhite);
             });
         });
         context.setPacketHandled(true);

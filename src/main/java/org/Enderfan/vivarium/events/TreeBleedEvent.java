@@ -17,7 +17,7 @@ import org.Enderfan.vivarium.entities.BloodPoolEntity;
 import org.Enderfan.vivarium.entities.ModEntities;
 import org.Enderfan.vivarium.particles.ModParticles;
 import org.Enderfan.vivarium.server.GuiltProvider;
-import org.Enderfan.vivarium.server.GuiltSyncPacket;
+import org.Enderfan.vivarium.server.packets.GuiltSyncPacket;
 import org.Enderfan.vivarium.server.ModMessages;
 
 import static org.Enderfan.vivarium.ModSounds.GORE1;

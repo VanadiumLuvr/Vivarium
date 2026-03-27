@@ -17,9 +17,6 @@ import net.minecraft.world.level.Level;
 import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.events.ApocalypseEvents;
 import org.Enderfan.vivarium.events.TreeBleedEvent;
-import org.Enderfan.vivarium.server.GuiltProvider;
-import org.Enderfan.vivarium.server.GuiltSyncPacket;
-import org.Enderfan.vivarium.server.ModMessages;
 
 import javax.annotation.Nullable;
 import java.util.List;

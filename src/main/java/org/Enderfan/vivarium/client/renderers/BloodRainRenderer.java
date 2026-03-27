@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;

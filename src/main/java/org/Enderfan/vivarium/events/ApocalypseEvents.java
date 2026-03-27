@@ -15,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.server.ModMessages;
-import org.Enderfan.vivarium.server.TriggerCreditsPacket;
+import org.Enderfan.vivarium.server.packets.TriggerCreditsPacket;
 import org.Enderfan.vivarium.server.WorldHeartState;
 
 @Mod.EventBusSubscriber(modid = "vivarium", bus = Mod.EventBusSubscriber.Bus.FORGE)

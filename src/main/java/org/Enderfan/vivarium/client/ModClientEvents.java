@@ -5,9 +5,8 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
-import org.Enderfan.vivarium.entities.ButterflyEntity;
 import org.Enderfan.vivarium.entities.ButterflyModel;
-import org.Enderfan.vivarium.client.ButterflyRenderer;
+import org.Enderfan.vivarium.client.renderers.ButterflyRenderer;
 // Replace this with wherever your EntityType DeferredRegister is:
 import org.Enderfan.vivarium.entities.ModEntities;
 

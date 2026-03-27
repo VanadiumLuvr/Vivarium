@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.Enderfan.vivarium.Vivarium;
-import org.Enderfan.vivarium.events.CaveInEvent;
+import org.Enderfan.vivarium.server.packets.*;
 
 public class ModMessages
 {

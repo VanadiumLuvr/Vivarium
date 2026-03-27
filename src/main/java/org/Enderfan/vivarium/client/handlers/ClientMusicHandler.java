@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.handlers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.Sound;

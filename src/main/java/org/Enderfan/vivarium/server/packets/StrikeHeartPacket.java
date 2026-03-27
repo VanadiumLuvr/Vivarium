@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.server; // Change to your actual package
+package org.Enderfan.vivarium.server.packets; // Change to your actual package
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

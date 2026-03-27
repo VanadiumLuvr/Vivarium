@@ -13,11 +13,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import org.Enderfan.vivarium.events.Events;
 import org.Enderfan.vivarium.events.TreeBleedEvent;
 import org.Enderfan.vivarium.item.ModItems;
 import org.Enderfan.vivarium.server.GuiltProvider;
 import org.Enderfan.vivarium.server.WorldHeartState;
+import org.Enderfan.vivarium.server.packets.GuiltSyncPacket;
 
 public class WorldHeartEntity extends Mob
 {
@@ -145,7 +145,7 @@ public class WorldHeartEntity extends Mob
                     // 2. FORCE the client to update instantly so the fog/rain/sounds vanish
                     if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
                     {
-                        org.Enderfan.vivarium.server.ModMessages.sendToPlayer(new org.Enderfan.vivarium.server.GuiltSyncPacket(Integer.MIN_VALUE), serverPlayer);
+                        org.Enderfan.vivarium.server.ModMessages.sendToPlayer(new GuiltSyncPacket(Integer.MIN_VALUE), serverPlayer);
                     }
                 });
             }

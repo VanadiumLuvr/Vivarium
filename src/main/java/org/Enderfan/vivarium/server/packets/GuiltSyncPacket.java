@@ -1,7 +1,8 @@
-package org.Enderfan.vivarium.server;
+package org.Enderfan.vivarium.server.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
+import org.Enderfan.vivarium.server.GuiltProvider;
 
 import java.util.function.Supplier;
 

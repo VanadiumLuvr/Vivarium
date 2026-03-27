@@ -1,7 +1,9 @@
-package org.Enderfan.vivarium.server;
+package org.Enderfan.vivarium.server.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
+import org.Enderfan.vivarium.client.handlers.ClientMusicHandler;
+
 import java.util.function.Supplier;
 
 public class TriggerCreditsPacket
@@ -25,7 +27,7 @@ public class TriggerCreditsPacket
                     mc.getSoundManager().stop(null, net.minecraft.sounds.SoundSource.RECORDS);
 
                     // 2. TURN ON THE SUPPRESSOR
-                    org.Enderfan.vivarium.client.ClientMusicHandler.suppressVanillaMusic = true;
+                    ClientMusicHandler.suppressVanillaMusic = true;
 
                     // 3. Play your song on the UI/Master channel
                     mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(org.Enderfan.vivarium.ModSounds.SONG1.get(), 1.0f, 0.2f));
@@ -46,7 +48,7 @@ public class TriggerCreditsPacket
                     // 5. TURN OFF THE SUPPRESSOR WHEN THE SONG ENDS
                     org.Enderfan.vivarium.client.ClientScheduler.schedule(2400, () ->
                     {
-                        org.Enderfan.vivarium.client.ClientMusicHandler.suppressVanillaMusic = false;
+                        ClientMusicHandler.suppressVanillaMusic = false;
                     });
                 }));
         context.setPacketHandled(true);

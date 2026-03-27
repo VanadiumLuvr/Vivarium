@@ -34,11 +34,12 @@ import net.minecraftforge.network.PacketDistributor;
 import org.Enderfan.vivarium.ModSounds;
 import org.Enderfan.vivarium.Vivarium;
 import org.Enderfan.vivarium.config.VivariumConfig;
-import org.Enderfan.vivarium.entities.BloodPoolEntity;
-import org.Enderfan.vivarium.entities.ModEntities;
 import org.Enderfan.vivarium.item.ModItems;
 import org.Enderfan.vivarium.particles.ModParticles;
 import org.Enderfan.vivarium.server.*;
+import org.Enderfan.vivarium.server.packets.BloodArrowPacket;
+import org.Enderfan.vivarium.server.packets.GuiltSyncPacket;
+import org.Enderfan.vivarium.server.packets.StrikeHeartPacket;
 
 import static org.Enderfan.vivarium.ModSounds.GORE1;
 import static org.Enderfan.vivarium.Vivarium.INSTANCE;
@@ -659,7 +660,7 @@ public class Events
             // 4. If the laser intersects the giant box, force the strike packet!
             if (box.clip(eyePos, endPos).isPresent())
             {
-                org.Enderfan.vivarium.server.ModMessages.sendToServer(new org.Enderfan.vivarium.server.StrikeHeartPacket(heart.getId()));
+                org.Enderfan.vivarium.server.ModMessages.sendToServer(new StrikeHeartPacket(heart.getId()));
                 break;
             }
         }

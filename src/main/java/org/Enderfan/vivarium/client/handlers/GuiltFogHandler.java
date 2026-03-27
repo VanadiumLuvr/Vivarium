@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.handlers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
 import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.server.GuiltProvider;
-import org.Enderfan.vivarium.server.PlayerGuilt;
 
 @Mod.EventBusSubscriber(modid = Vivarium.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GuiltFogHandler

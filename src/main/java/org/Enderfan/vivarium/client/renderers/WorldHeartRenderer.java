@@ -1,9 +1,10 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.Enderfan.vivarium.client.ModModelLayers;
 import org.Enderfan.vivarium.entities.WorldHeartEntity;
 import org.Enderfan.vivarium.entities.WorldHeartModel;
 

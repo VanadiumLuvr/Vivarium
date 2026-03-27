@@ -1,4 +1,4 @@
-package org.Enderfan.vivarium.client;
+package org.Enderfan.vivarium.client.handlers;
 
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.InteractionHand;
