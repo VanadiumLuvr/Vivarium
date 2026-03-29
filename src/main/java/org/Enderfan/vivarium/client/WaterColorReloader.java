@@ -1,7 +1,6 @@
 package org.Enderfan.vivarium.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,7 +12,7 @@ import org.Enderfan.vivarium.server.GuiltProvider;
 public class WaterColorReloader
 {
     // A globally accessible variable that the background chunk threads can safely read
-    public static int currentClientGuilt = 0;
+    public static volatile int currentClientGuilt = 0;
     private static int lastUpdatedGuilt = -1;
 
     @SubscribeEvent
@@ -42,20 +41,13 @@ public class WaterColorReloader
                     {
                         lastUpdatedGuilt = currentClientGuilt;
 
-                        // 1. Nuke the vanilla color memory so it forgets the old blue tint instantly
+                        // 1. Nuke the vanilla color memory so it forgets the old blue tint
                         mc.level.clearTintCaches();
 
-                        BlockPos pos = mc.player.blockPosition();
-
-                        // 2. ONLY queue the chunks we can actually see right now.
-                        // (Distant chunks will pull the correct static guilt variable natively when they load)
-                        int renderDistance = mc.options.getEffectiveRenderDistance();
-                        int radius = renderDistance * 16;
-
-                        mc.levelRenderer.setBlocksDirty(
-                                pos.getX() - radius, -64, pos.getZ() - radius,
-                                pos.getX() + radius, 320, pos.getZ() + radius
-                        );
+                        // 2. Let the engine handle the queue natively.
+                        // The world will visually "flash" and rebuild from your feet outward,
+                        // instantly applying the new Mixin math to everything loaded in memory.
+                        mc.levelRenderer.allChanged();
                     }
                 }
                 else if (lastUpdatedGuilt != -1)
@@ -68,5 +60,3 @@ public class WaterColorReloader
         }
     }
 }
-
-// My name is Caine! I am your bitch.
