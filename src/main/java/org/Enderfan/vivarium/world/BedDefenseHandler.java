@@ -32,7 +32,7 @@ public class BedDefenseHandler
                         if (guilt.getGuilt() > 100)
                         {
                             Level level = player.level();
-                            int radius = 15; // How far out the thorns can spawn
+                            int radius = 10; // How far out the thorns can spawn
 
                             // Try 10 random spots in the radius.
                             // If it finds a valid one, it places the thorn and stops.

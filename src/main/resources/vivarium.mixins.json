@@ -9,7 +9,8 @@
   "client":
   [
     "MixinLevelRenderer",
-    "ParticleEngineMixin"
+    "ParticleEngineMixin",
+    "MixinBiomeColors"
   ],
   "injectors":
   {
