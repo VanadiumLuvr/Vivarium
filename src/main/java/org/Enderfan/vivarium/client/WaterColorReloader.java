@@ -1,6 +1,7 @@
 package org.Enderfan.vivarium.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -11,7 +12,7 @@ import org.Enderfan.vivarium.server.GuiltProvider;
 @Mod.EventBusSubscriber(modid = "vivarium", value = Dist.CLIENT)
 public class WaterColorReloader
 {
-    // A globally accessible variable that the background chunk threads can safely read
+    // Ensure background threads always see the main thread's updates
     public static volatile int currentClientGuilt = 0;
     private static int lastUpdatedGuilt = -1;
 
@@ -32,31 +33,40 @@ public class WaterColorReloader
 
                 if (currentClientGuilt > threshold)
                 {
-                    if (lastUpdatedGuilt == -1)
+                    // Trigger if it's the first time crossing the threshold OR if guilt changed by 50+
+                    if (lastUpdatedGuilt == -1 || Math.abs(currentClientGuilt - lastUpdatedGuilt) >= 50)
                     {
                         lastUpdatedGuilt = currentClientGuilt;
-                    }
-
-                    if (Math.abs(currentClientGuilt - lastUpdatedGuilt) >= 50)
-                    {
-                        lastUpdatedGuilt = currentClientGuilt;
-
-                        // 1. Nuke the vanilla color memory so it forgets the old blue tint
-                        mc.level.clearTintCaches();
-
-                        // 2. Let the engine handle the queue natively.
-                        // The world will visually "flash" and rebuild from your feet outward,
-                        // instantly applying the new Mixin math to everything loaded in memory.
-                        mc.levelRenderer.allChanged();
+                        reloadWaterChunks(mc);
                     }
                 }
                 else if (lastUpdatedGuilt != -1)
                 {
+                    // Reset when falling back below the threshold
                     lastUpdatedGuilt = -1;
-                    mc.level.clearTintCaches();
-                    mc.levelRenderer.allChanged();
+                    reloadWaterChunks(mc);
                 }
             });
         }
+    }
+
+    private static void reloadWaterChunks(Minecraft mc)
+    {
+        // 1. Clear the main thread's tint cache
+        mc.level.clearTintCaches();
+
+        // 2. Queue the chunks in render distance for a smooth background rebuild
+        BlockPos pos = mc.player.blockPosition();
+        int renderDistance = mc.options.getEffectiveRenderDistance();
+        int radius = renderDistance * 16;
+
+        // Dynamically grab the world's build height to support custom dimensions
+        int minY = mc.level.getMinBuildHeight();
+        int maxY = mc.level.getMaxBuildHeight();
+
+        mc.levelRenderer.setBlocksDirty(
+                pos.getX() - radius, minY, pos.getZ() - radius,
+                pos.getX() + radius, maxY, pos.getZ() + radius
+        );
     }
 }
