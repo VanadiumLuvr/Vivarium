@@ -16,6 +16,11 @@ public class WaterColorReloader
     public static volatile int currentClientGuilt = 0;
     private static int lastUpdatedGuilt = -1;
 
+    // Ripple Effect Variables to prevent CPU stutter
+    private static int rippleRadius = -1;
+    private static int maxRippleRadius = 0;
+    private static BlockPos rippleCenter = null;
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event)
     {
@@ -24,6 +29,14 @@ public class WaterColorReloader
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
+        // 1. Process the expanding visual ripple if it is active
+        // This runs every single frame, pushing the update wave out by 1 chunk per tick
+        if (rippleRadius >= 0 && rippleCenter != null)
+        {
+            processRippleRing(mc);
+        }
+
+        // 2. Check guilt every 20 ticks (1 second)
         if (mc.player.tickCount % 20 == 0)
         {
             mc.player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap ->
@@ -33,40 +46,66 @@ public class WaterColorReloader
 
                 if (currentClientGuilt > threshold)
                 {
-                    // Trigger if it's the first time crossing the threshold OR if guilt changed by 50+
                     if (lastUpdatedGuilt == -1 || Math.abs(currentClientGuilt - lastUpdatedGuilt) >= 50)
                     {
                         lastUpdatedGuilt = currentClientGuilt;
-                        reloadWaterChunks(mc);
+                        startRipple(mc);
                     }
                 }
                 else if (lastUpdatedGuilt != -1)
                 {
-                    // Reset when falling back below the threshold
                     lastUpdatedGuilt = -1;
-                    reloadWaterChunks(mc);
+                    startRipple(mc);
                 }
             });
         }
     }
 
-    private static void reloadWaterChunks(Minecraft mc)
+    private static void startRipple(Minecraft mc)
     {
-        // 1. Clear the main thread's tint cache
+        // Instantly dump the old blue color from memory
         mc.level.clearTintCaches();
 
-        // 2. Queue the chunks in render distance for a smooth background rebuild
-        BlockPos pos = mc.player.blockPosition();
-        int renderDistance = mc.options.getEffectiveRenderDistance();
-        int radius = renderDistance * 16;
+        // Lock in the epicenter of the guilt spike
+        rippleCenter = mc.player.blockPosition();
+        rippleRadius = 0;
 
-        // Dynamically grab the world's build height to support custom dimensions
+        // Grab the exact edge of their vision
+        maxRippleRadius = mc.options.getEffectiveRenderDistance();
+    }
+
+    private static void processRippleRing(Minecraft mc)
+    {
+        int cx = rippleCenter.getX() >> 4;
+        int cz = rippleCenter.getZ() >> 4;
         int minY = mc.level.getMinBuildHeight();
         int maxY = mc.level.getMaxBuildHeight();
 
-        mc.levelRenderer.setBlocksDirty(
-                pos.getX() - radius, minY, pos.getZ() - radius,
-                pos.getX() + radius, maxY, pos.getZ() + radius
-        );
+        // ONLY mark the chunks sitting exactly on the perimeter of the current radius
+        for (int x = -rippleRadius; x <= rippleRadius; x++)
+        {
+            for (int z = -rippleRadius; z <= rippleRadius; z++)
+            {
+                if (Math.abs(x) == rippleRadius || Math.abs(z) == rippleRadius)
+                {
+                    int blockX = (cx + x) << 4;
+                    int blockZ = (cz + z) << 4;
+
+                    mc.levelRenderer.setBlocksDirty(
+                            blockX, minY, blockZ,
+                            blockX + 15, maxY, blockZ + 15
+                    );
+                }
+            }
+        }
+
+        // Expand the ring outward for the next tick
+        rippleRadius++;
+
+        // Stop the engine once we reach the edge of the loaded world
+        if (rippleRadius > maxRippleRadius)
+        {
+            rippleRadius = -1;
+        }
     }
 }

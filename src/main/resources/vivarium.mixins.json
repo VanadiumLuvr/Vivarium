@@ -10,7 +10,8 @@
   [
     "MixinLevelRenderer",
     "ParticleEngineMixin",
-    "MixinBiomeColors"
+    "MixinBiomeColors",
+    "MixinTitleScreen"
   ],
   "injectors":
   {
