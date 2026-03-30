@@ -100,7 +100,7 @@ public class VivariumConfig
 
         LOG_THRESHOLD = BUILDER
                 .comment("Requisite number of logs to be broken to trigger the tree bleed event")
-                .defineInRange("logThreshold", 50, 0, 10000);
+                .defineInRange("logThreshold", 25, 0, 10000);
 
         STONE_THRESHOLD = BUILDER
                 .comment("Requisite number of stone/deepslate to be broken to trigger the cave in event")
