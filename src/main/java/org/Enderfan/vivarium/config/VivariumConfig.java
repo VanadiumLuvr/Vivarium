@@ -38,6 +38,7 @@ public class VivariumConfig
     public static final ForgeConfigSpec.DoubleValue CARVING_CHANCE;
     public static final ForgeConfigSpec.IntValue BLOOD_RAIN_THRESHOLD;
     public static final ForgeConfigSpec.IntValue ALT_SUN_THRESHOLD;
+    public static final ForgeConfigSpec.IntValue HEAT_WAVE_THRESHOLD;
 
     //define all our guilt increment variables
     public static final ForgeConfigSpec.IntValue GUILT_INC_GRASS;
@@ -173,6 +174,10 @@ public class VivariumConfig
         ALT_SUN_THRESHOLD = BUILDER
                 .comment("Guilt level when the sun will change")
                 .defineInRange("altSunThreshold", 1200, 0, 10000);
+
+        HEAT_WAVE_THRESHOLD = BUILDER
+                .comment("Guilt level when the heat wave will occur")
+                .defineInRange("heatWaveThreshold", 2550, 0, 10000);
 
         BUILDER.pop();
 

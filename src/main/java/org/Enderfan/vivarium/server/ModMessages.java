@@ -61,6 +61,12 @@ public class ModMessages
                 .encoder(StrikeHeartPacket::toBytes)
                 .consumerMainThread(StrikeHeartPacket::handle)
                 .add();
+
+        INSTANCE.messageBuilder(HeatSyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(HeatSyncPacket::new)
+                .encoder(HeatSyncPacket::toBytes)
+                .consumerMainThread(HeatSyncPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player)
