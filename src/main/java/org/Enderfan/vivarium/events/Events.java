@@ -35,6 +35,7 @@ import net.minecraftforge.network.PacketDistributor;
 import org.Enderfan.vivarium.ModSounds;
 import org.Enderfan.vivarium.Vivarium;
 import org.Enderfan.vivarium.config.VivariumConfig;
+import org.Enderfan.vivarium.entities.ButterflyEntity;
 import org.Enderfan.vivarium.item.ModItems;
 import org.Enderfan.vivarium.particles.ModParticles;
 import org.Enderfan.vivarium.server.*;
@@ -254,6 +255,33 @@ public class Events
     public static void onAnimalKilled(LivingDeathEvent event)
     {
         if(event.getEntity() instanceof Animal animal)
+        {
+            if(event.getSource().getEntity() instanceof ServerPlayer player)
+            {
+                player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(guilt ->
+                {
+                    guilt.addGuilt(VivariumConfig.GUILT_INC_KILL.get());
+                    ModMessages.sendToPlayer(new GuiltSyncPacket(guilt.getGuilt()), player);
+
+                    // If guilt is over 300, 5% chance for the animal to violently burst blood
+                    if (guilt.getGuilt() > VivariumConfig.ANIMAL_BLEED_THRESHOLD.get() && player.getRandom().nextFloat() < 0.05f)
+                    {
+                        if (animal.level() instanceof ServerLevel serverLevel)
+                        {
+                            // A wet, fleshy sound
+                            serverLevel.playSound(null, animal.blockPosition(), GORE1.get(), SoundSource.NEUTRAL, 1.2f, 0.8f);
+
+                            // A massive burst of your blood particles
+                            serverLevel.sendParticles(ModParticles.BLOOD_DRIP.get(),
+                                    animal.getX(), animal.getY() + 0.5, animal.getZ(),
+                                    60, 0.4, 0.4, 0.4, 0.1);
+                        }
+                    }
+                });
+            }
+        }
+
+        if(event.getEntity() instanceof ButterflyEntity animal) // I have no idea why just doing || doesn't work but oh well
         {
             if(event.getSource().getEntity() instanceof ServerPlayer player)
             {
