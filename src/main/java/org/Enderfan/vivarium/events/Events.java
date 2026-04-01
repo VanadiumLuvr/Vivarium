@@ -254,53 +254,30 @@ public class Events
     @SubscribeEvent
     public static void onAnimalKilled(LivingDeathEvent event)
     {
-        if(event.getEntity() instanceof Animal animal)
+        // Grab the entity. Since it's a LivingDeathEvent, it is guaranteed to be a LivingEntity.
+        net.minecraft.world.entity.LivingEntity deadVictim = event.getEntity();
+
+        // Check if it's either of the types we want to trigger the guilt logic for
+        if (deadVictim instanceof Animal || deadVictim instanceof ButterflyEntity)
         {
-            if(event.getSource().getEntity() instanceof ServerPlayer player)
+            if (event.getSource().getEntity() instanceof ServerPlayer player)
             {
                 player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(guilt ->
                 {
                     guilt.addGuilt(VivariumConfig.GUILT_INC_KILL.get());
                     ModMessages.sendToPlayer(new GuiltSyncPacket(guilt.getGuilt()), player);
 
-                    // If guilt is over 300, 5% chance for the animal to violently burst blood
+                    // If guilt is over the threshold, 5% chance for the violent blood burst
                     if (guilt.getGuilt() > VivariumConfig.ANIMAL_BLEED_THRESHOLD.get() && player.getRandom().nextFloat() < 0.05f)
                     {
-                        if (animal.level() instanceof ServerLevel serverLevel)
+                        if (deadVictim.level() instanceof ServerLevel serverLevel)
                         {
                             // A wet, fleshy sound
-                            serverLevel.playSound(null, animal.blockPosition(), GORE1.get(), SoundSource.NEUTRAL, 1.2f, 0.8f);
+                            serverLevel.playSound(null, deadVictim.blockPosition(), GORE1.get(), SoundSource.NEUTRAL, 1.2f, 0.8f);
 
                             // A massive burst of your blood particles
                             serverLevel.sendParticles(ModParticles.BLOOD_DRIP.get(),
-                                    animal.getX(), animal.getY() + 0.5, animal.getZ(),
-                                    60, 0.4, 0.4, 0.4, 0.1);
-                        }
-                    }
-                });
-            }
-        }
-
-        if(event.getEntity() instanceof ButterflyEntity animal) // I have no idea why just doing || doesn't work but oh well
-        {
-            if(event.getSource().getEntity() instanceof ServerPlayer player)
-            {
-                player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(guilt ->
-                {
-                    guilt.addGuilt(VivariumConfig.GUILT_INC_KILL.get());
-                    ModMessages.sendToPlayer(new GuiltSyncPacket(guilt.getGuilt()), player);
-
-                    // If guilt is over 300, 5% chance for the animal to violently burst blood
-                    if (guilt.getGuilt() > VivariumConfig.ANIMAL_BLEED_THRESHOLD.get() && player.getRandom().nextFloat() < 0.05f)
-                    {
-                        if (animal.level() instanceof ServerLevel serverLevel)
-                        {
-                            // A wet, fleshy sound
-                            serverLevel.playSound(null, animal.blockPosition(), GORE1.get(), SoundSource.NEUTRAL, 1.2f, 0.8f);
-
-                            // A massive burst of your blood particles
-                            serverLevel.sendParticles(ModParticles.BLOOD_DRIP.get(),
-                                    animal.getX(), animal.getY() + 0.5, animal.getZ(),
+                                    deadVictim.getX(), deadVictim.getY() + 0.5, deadVictim.getZ(),
                                     60, 0.4, 0.4, 0.4, 0.1);
                         }
                     }
