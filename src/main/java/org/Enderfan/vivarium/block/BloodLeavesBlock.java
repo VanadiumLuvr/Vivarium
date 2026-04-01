@@ -2,6 +2,7 @@ package org.Enderfan.vivarium.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,7 +20,6 @@ public class BloodLeavesBlock extends LeavesBlock
     {
         super.animateTick(state, level, pos, random);
 
-        // 1 in 15 chance per tick to drop a particle per leaf block
         if (random.nextInt(15) == 0)
         {
             BlockPos below = pos.below();
@@ -31,5 +31,19 @@ public class BloodLeavesBlock extends LeavesBlock
                 level.addParticle(ModParticles.BLOOD_DRIP.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
             }
         }
+    }
+
+    // Tells the engine this block reduces passing light by exactly 0 levels (like Glass)
+    @Override
+    public int getLightBlock(BlockState state, BlockGetter level, BlockPos pos)
+    {
+        return 0;
+    }
+
+    // Forces skylight to fall straight through the block without stopping
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos)
+    {
+        return true;
     }
 }
