@@ -19,13 +19,19 @@ public class MixinTitleScreen
     @Inject(method = "init", at = @At("RETURN"))
     private void onInit(CallbackInfo ci)
     {
+
+        if (MetaStateManager.getLastGuilt() >= 1500)
+        {
+            this.splash = new SplashRenderer("I gave you everything...");
+        }
         // Check the local file to see if the player left a high-guilt world
-        if (MetaStateManager.getLastGuilt() >= 1000)
+        else if (MetaStateManager.getLastGuilt() >= 1000)
         {
             // Forcibly overwrite the yellow text
-            this.splash = new SplashRenderer("Why do you hurt me when I give you everything?");
+            this.splash = new SplashRenderer("Why are you hurting me?");
         }
-        else if (MetaStateManager.getLastGuilt() < 0) //for if they killed the world heart
+
+        if (MetaStateManager.getLastGuilt() < 0) //for if they killed the world heart
         {
             this.splash = new SplashRenderer("...");
         }

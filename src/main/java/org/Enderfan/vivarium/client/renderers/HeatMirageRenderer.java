@@ -53,6 +53,8 @@ public class HeatMirageRenderer
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
+        CompoundTag data = mc.player.getPersistentData();
+
         // 1. Tick existing mirages and kill old ones
         Iterator<Mirage> iterator = mirages.iterator();
         while (iterator.hasNext())
@@ -81,8 +83,8 @@ public class HeatMirageRenderer
                 pos = pos.below();
             }
 
-            // Only spawn if it's outside under the open sky
-            if (mc.level.canSeeSky(pos.above()))
+            // Only spawn if it's outside under the open sky, and the event is ongoing
+            if (mc.level.canSeeSky(pos.above()) && data.contains("vivarium_heat_wave_start") && !data.contains("vivarium_heat_wave_end"))
             {
                 mirages.add(new Mirage(targetX, pos.getY() + 1.5, targetZ));
             }

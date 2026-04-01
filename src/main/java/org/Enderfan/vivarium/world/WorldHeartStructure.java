@@ -2,6 +2,7 @@ package org.Enderfan.vivarium.world;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +11,6 @@ import java.util.Optional;
 
 public class WorldHeartStructure extends Structure
 {
-    // i'm assuming you have a codec registered somewhere. if not, have fun with that.
     public static final Codec<WorldHeartStructure> CODEC = simpleCodec(WorldHeartStructure::new);
 
     public WorldHeartStructure(Structure.StructureSettings settings)
@@ -21,19 +21,34 @@ public class WorldHeartStructure extends Structure
     @Override
     public @NotNull Optional<GenerationStub> findGenerationPoint(Structure.GenerationContext context)
     {
-        // put it deep underground. like y -40.
-        // i'm not doing the math to find a "perfect" spot.
-        BlockPos pos = new BlockPos(context.chunkPos().getMiddleBlockX(), -40, context.chunkPos().getMiddleBlockZ());
+        int x = context.chunkPos().getMiddleBlockX();
+        int z = context.chunkPos().getMiddleBlockZ();
 
-        return Optional.of(new Structure.GenerationStub(pos, (builder) ->
+        BlockPos heartPos = new BlockPos(x, -40, z);
+
+        // Ask the engine directly where the highest solid ground is at these coordinates
+        int surfaceY = context.chunkGenerator().getBaseHeight(
+                x, z,
+                Heightmap.Types.WORLD_SURFACE_WG,
+                context.heightAccessor(),
+                context.randomState()
+        );
+
+        BlockPos treePos = new BlockPos(x, surfaceY, z);
+
+        return Optional.of(new Structure.GenerationStub(heartPos, (builder) ->
         {
-            builder.addPiece(new WorldHeartPiece(pos));
+            // Spawn the bloody core deep underground
+            builder.addPiece(new WorldHeartPiece(heartPos));
+
+            // Spawn the ominous tree on the surface directly above it
+            builder.addPiece(new WorldTreePiece(treePos));
         }));
     }
 
     @Override
     public @NotNull StructureType<?> type()
     {
-        return ModStructures.WORLD_HEART.get(); // go register this. or don't.
+        return ModStructures.WORLD_HEART.get();
     }
 }
