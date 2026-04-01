@@ -29,6 +29,9 @@ public class ModBlocks
             () -> new net.minecraft.world.level.block.LiquidBlock(org.Enderfan.vivarium.fluid.ModFluids.SOURCE_BLOOD,
                     net.minecraft.world.level.block.state.BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.WATER).noLootTable().liquid()));
 
+    public static final RegistryObject<Block> BLOOD_LEAVES = registerBlock("blood_leaves",
+            () -> new BloodLeavesBlock(BlockBehaviour.Properties.copy(Blocks.CHERRY_LEAVES).noOcclusion()));
+
     // Helper method that registers the block AND its inventory item at the same time
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

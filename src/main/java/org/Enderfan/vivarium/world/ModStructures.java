@@ -23,6 +23,9 @@ public class ModStructures
     public static final RegistryObject<StructurePieceType> WORLD_HEART_PIECE =
             PIECES.register("world_heart_piece", () -> WorldHeartPiece::new);
 
+    public static final RegistryObject<StructurePieceType> WORLD_TREE_PIECE =
+            PIECES.register("world_tree_piece", () -> WorldTreePiece::new);
+
     public static void register(IEventBus eventBus)
     {
         STRUCTURES.register(eventBus);
