@@ -145,10 +145,10 @@ public class VolcanoEvent
         // 3. The Massive Explosion
         level.explode(null, center.getX() + 0.5, center.getY(), center.getZ() + 0.5, 7.0f, Level.ExplosionInteraction.MOB);
 
-        // 4. The "Lavacast" Pedestal (The Ramp)
-        // We build a solid cone of magma and cobblestone that fills the crater and forms a bridge
-        // over the lip so the lava has a physical surface to flow outward on.
-        int ventRadius = 7; // Matches the explosion radius so it connects to the crater walls
+        // 4. The Submerged Plug (The Ramp)
+        // We build a smaller, shallower cone that acts as a structural floor for the crater,
+        // but it is mathematically capped below the lava line so it is completely swallowed.
+        int ventRadius = 5;
         for (int dx = -ventRadius; dx <= ventRadius; dx++)
         {
             for (int dz = -ventRadius; dz <= ventRadius; dz++)
@@ -158,15 +158,13 @@ public class VolcanoEvent
                 {
                     double distance = Math.sqrt(distanceSq);
 
-                    // Creates a slope: +2 height at the center, sloping down to -1 at the crater edges
-                    int topY = (int) (2.0 - (distance * 0.6));
+                    // Center peaks at -1 (underground). Edges slope down gently to -3.
+                    int topY = (int) (-1.0 - (distance * 0.4));
 
-                    // Fill from the bottom of the explosion crater up to the slope height
                     for (int yOffset = -8; yOffset <= topY; yOffset++)
                     {
                         BlockPos ventPos = center.offset(dx, yOffset, dz);
 
-                        // Mix cobblestone and magma blocks for a realistic volcanic crust
                         BlockState crust = level.random.nextBoolean() ?
                                 net.minecraft.world.level.block.Blocks.MAGMA_BLOCK.defaultBlockState() :
                                 net.minecraft.world.level.block.Blocks.COBBLESTONE.defaultBlockState();
@@ -178,10 +176,10 @@ public class VolcanoEvent
         }
 
         // 5. The Overflowing Lava Vent
-        // Because the pedestal is +2 blocks high in the center, placing lava here guarantees
-        // it will flow down the cobblestone slope and breach the crater walls.
-        int lavaRadius = 2;
-        for (int yOffset = 1; yOffset <= 3; yOffset++)
+        // We drop a thick, solid cylinder of lava directly onto the submerged plug.
+        // Because it sits at Y=0 and Y=1, it covers the cobble completely and breaches the crater lip.
+        int lavaRadius = 3;
+        for (int yOffset = -1; yOffset <= 1; yOffset++)
         {
             for (int dx = -lavaRadius; dx <= lavaRadius; dx++)
             {
@@ -190,7 +188,12 @@ public class VolcanoEvent
                     if (dx * dx + dz * dz <= lavaRadius * lavaRadius)
                     {
                         BlockPos lavaPos = center.offset(dx, yOffset, dz);
-                        level.setBlockAndUpdate(lavaPos, net.minecraft.world.level.block.Blocks.LAVA.defaultBlockState());
+
+                        // Only place lava in empty space so we don't accidentally overwrite our own rock plug
+                        if (level.isEmptyBlock(lavaPos) || level.getBlockState(lavaPos).canBeReplaced())
+                        {
+                            level.setBlockAndUpdate(lavaPos, net.minecraft.world.level.block.Blocks.LAVA.defaultBlockState());
+                        }
                     }
                 }
             }
