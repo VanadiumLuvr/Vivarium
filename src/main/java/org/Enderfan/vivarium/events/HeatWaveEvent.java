@@ -10,6 +10,7 @@ import org.Enderfan.vivarium.config.VivariumConfig;
 import org.Enderfan.vivarium.server.GuiltProvider;
 import org.Enderfan.vivarium.server.ModMessages;
 import org.Enderfan.vivarium.server.packets.HeatSyncPacket;
+import org.Enderfan.vivarium.server.packets.HeatWaveStatePacket;
 
 @Mod.EventBusSubscriber(modid = "vivarium")
 public class HeatWaveEvent
@@ -33,13 +34,20 @@ public class HeatWaveEvent
 
                 long elapsed = level.getGameTime() - data.getLong("vivarium_heat_wave_start");
 
+                // Blast this to the client every 2 seconds to keep the mirages rendering, even if they relog
+                if (player.tickCount % 40 == 0)
+                {
+                    ModMessages.sendToPlayer(new HeatWaveStatePacket(true), player);
+                }
+
                 if (elapsed >= 24000)
                 {
                     data.putBoolean("vivarium_heat_wave_done", true);
                     data.remove("vivarium_heat_wave_start");
                     data.remove("vivarium_heat_level");
-                    // Force the UI to instantly clear when the day is over
                     ModMessages.sendToPlayer(new HeatSyncPacket(0), player);
+                    // Tell the client the event is over so mirages stop
+                    ModMessages.sendToPlayer(new HeatWaveStatePacket(false), player);
                 }
                 else
                 {

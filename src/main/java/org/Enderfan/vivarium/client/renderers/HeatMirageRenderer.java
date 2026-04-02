@@ -83,8 +83,8 @@ public class HeatMirageRenderer
                 pos = pos.below();
             }
 
-            // Only spawn if it's outside under the open sky, and the event is ongoing
-            if (mc.level.canSeeSky(pos.above()) && data.contains("vivarium_heat_wave_start") && !data.contains("vivarium_heat_wave_end"))
+            // Only spawn if it's outside under the open sky, and the server says the event is ongoing
+            if (mc.level.canSeeSky(pos.above()) && data.getBoolean("vivarium_heat_wave_active"))
             {
                 mirages.add(new Mirage(targetX, pos.getY() + 1.5, targetZ));
             }

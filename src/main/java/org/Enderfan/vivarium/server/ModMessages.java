@@ -67,6 +67,12 @@ public class ModMessages
                 .encoder(HeatSyncPacket::toBytes)
                 .consumerMainThread(HeatSyncPacket::handle)
                 .add();
+
+        INSTANCE.messageBuilder(HeatWaveStatePacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(HeatWaveStatePacket::new)
+                .encoder(HeatWaveStatePacket::toBytes)
+                .consumerMainThread(HeatWaveStatePacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player)
