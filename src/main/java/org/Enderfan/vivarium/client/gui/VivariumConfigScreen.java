@@ -110,6 +110,7 @@ public class VivariumConfigScreen extends Screen
         startY = this.addDoubleInput("Carving Chance", "Chance of carvings appearing (1 = 100%)", VivariumConfig.CARVING_CHANCE, startY, spacing);
         startY = this.addIntInput("Blood Rain Threshold", "Guilt level when rain will turn red", VivariumConfig.BLOOD_RAIN_THRESHOLD, startY, spacing);
         startY = this.addIntInput("Alt Sun Threshold", "Guilt level when the sun will change", VivariumConfig.ALT_SUN_THRESHOLD, startY, spacing);
+        startY = this.addIntInput("Heat Wave Threshold", "Guilt level when the heat wave will occur", VivariumConfig.HEAT_WAVE_THRESHOLD, startY, spacing);
 
         // --- Guilt Settings (Increments) ---
         startY = this.addIntInput("Guilt Increment: Grass", "How much to increment guilt on breaking a grass block", VivariumConfig.GUILT_INC_GRASS, startY, spacing);

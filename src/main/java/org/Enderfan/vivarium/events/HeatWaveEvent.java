@@ -12,7 +12,7 @@ import org.Enderfan.vivarium.server.ModMessages;
 import org.Enderfan.vivarium.server.packets.HeatSyncPacket;
 
 @Mod.EventBusSubscriber(modid = "vivarium")
-public class HeatWaveHandler
+public class HeatWaveEvent
 {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)

@@ -182,7 +182,6 @@ public class VivariumConfig
         BUILDER.pop();
 
 
-
         BUILDER.push("Guilt Settings");
 
         GUILT_INC_GRASS = BUILDER
