@@ -322,4 +322,29 @@ public class VivariumConfigScreen extends Screen
             this.originalY = originalY;
         }
     }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        if (this.currentPage == 1)
+        {
+            // If the mouse is inside the top or bottom black margins
+            if (mouseY <= 25 || mouseY >= this.height - 40)
+            {
+                // Manually check if they actually clicked one of our persistent bottom buttons
+                if (mouseY >= this.height - 40)
+                {
+                    if (this.backButton != null && this.backButton.mouseClicked(mouseX, mouseY, button)) return true;
+                    if (this.saveButton != null && this.saveButton.mouseClicked(mouseX, mouseY, button)) return true;
+                }
+
+                // If they clicked the black bar but NOT a button, we completely kill the click here.
+                // This stops the super.mouseClicked() call from passing it to the hidden text boxes!
+                return false;
+            }
+        }
+
+        // If the click was safely in the middle of the screen (or on page 0), proceed normally
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
 }
