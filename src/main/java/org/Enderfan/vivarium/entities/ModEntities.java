@@ -26,4 +26,10 @@ public class ModEntities {
             ENTITIES.register("butterfly", () -> EntityType.Builder.of(ButterflyEntity::new, MobCategory.AMBIENT)
                     .sized(0.5f, 0.3f) // make it tiny
                     .build("butterfly"));
+
+    public static final RegistryObject<EntityType<GrasshopperEntity>> GRASSHOPPER =
+            ENTITIES.register("grasshopper", () -> EntityType.Builder.of(GrasshopperEntity::new, MobCategory.AMBIENT)
+                    .sized(0.4f, 0.4f) // Grasshoppers are small!
+                    .clientTrackingRange(8)
+                    .build("grasshopper"));
 }
