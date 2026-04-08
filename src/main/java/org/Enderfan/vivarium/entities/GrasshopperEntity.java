@@ -21,6 +21,7 @@ public class GrasshopperEntity extends Animal
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState walkAnimationState = new AnimationState();
     public final AnimationState flyAnimationState = new AnimationState();
+    public boolean isFlyingSoundActive = false;
 
     public GrasshopperEntity(EntityType<? extends Animal> type, Level level)
     {
@@ -54,21 +55,35 @@ public class GrasshopperEntity extends Animal
         if (this.level().isClientSide())
         {
             this.setupAnimationStates();
+
+            // --- THE NEW SOUND LOGIC ---
+            // If the bug is in the air and moving
+            if (!this.onGround() && this.getDeltaMovement().horizontalDistanceSqr() > 0.0001D)
+            {
+                // If we haven't started the sound yet, start it now
+                if (!this.isFlyingSoundActive)
+                {
+                    org.Enderfan.vivarium.client.sounds.GrasshopperFlySoundInstance.play(this);
+                    this.isFlyingSoundActive = true;
+                }
+            }
+            else
+            {
+                // The moment it lands, reset the flag so it can play again on the next jump.
+                // (The sound instance will automatically read onGround() and kill itself).
+                this.isFlyingSoundActive = false;
+            }
         }
         else
         {
-            // If the grasshopper is actively pathfinding and touching the ground
             if (!this.getNavigation().isDone() && this.onGround())
             {
-                // Lowered the requirement from 0.05 to 0.005 so it triggers reliably when moving
                 if (this.getDeltaMovement().horizontalDistanceSqr() > 0.005D)
                 {
-                    // 15% chance to leap every tick it is trying to walk
                     if (this.random.nextFloat() < 0.15F)
                     {
                         this.jumpFromGround();
 
-                        // Grab the current motion vector and multiply it to create a massive forward lunge
                         net.minecraft.world.phys.Vec3 motion = this.getDeltaMovement();
                         this.setDeltaMovement(motion.x * 2.5D, 0.45D, motion.z * 2.5D);
                     }
@@ -117,7 +132,7 @@ public class GrasshopperEntity extends Animal
     {
         super.aiStep();
 
-        // If in the air and falling downward, heavily resist gravity
+        // If in the air and falling downward, resist gravity
         if (!this.onGround() && this.getDeltaMovement().y < 0.0D)
         {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.8D, 1.0D));

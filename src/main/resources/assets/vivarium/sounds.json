@@ -27,6 +27,11 @@
   "crying":
   {
     "sounds": ["vivarium:crying"]
+  },
+
+  "grasshopper_fly":
+  {
+    "sounds": ["vivarium:grasshopper_fly"]
   }
 
 }
