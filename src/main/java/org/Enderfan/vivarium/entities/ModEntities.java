@@ -7,7 +7,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.Enderfan.vivarium.Vivarium;
 
-public class ModEntities {
+public class ModEntities
+{
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(Registries.ENTITY_TYPE, Vivarium.MODID);
 
@@ -32,4 +33,10 @@ public class ModEntities {
                     .sized(0.4f, 0.4f) // Grasshoppers are small!
                     .clientTrackingRange(8)
                     .build("grasshopper"));
+
+    public static final RegistryObject<EntityType<BirdEntity>> BIRD =
+            ENTITIES.register("bird", () -> EntityType.Builder.of(BirdEntity::new, MobCategory.AMBIENT)
+                    .sized(0.6f, 0.6f)
+                    .clientTrackingRange(8)
+                    .build("bird"));
 }

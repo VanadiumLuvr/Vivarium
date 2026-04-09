@@ -1,13 +1,11 @@
 package org.Enderfan.vivarium.events;
 
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
-import org.Enderfan.vivarium.entities.ButterflyEntity;
-import org.Enderfan.vivarium.entities.GrasshopperEntity;
-import org.Enderfan.vivarium.entities.ModEntities;
-import org.Enderfan.vivarium.entities.WorldHeartEntity;
+import org.Enderfan.vivarium.entities.*;
 
 @Mod.EventBusSubscriber(modid = Vivarium.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModAttributeEvents
@@ -21,6 +19,8 @@ public class ModAttributeEvents
         event.put(ModEntities.GRASSHOPPER.get(), GrasshopperEntity.createAttributes().build());
 
         event.put(ModEntities.WORLD_HEART.get(), WorldHeartEntity.createAttributes().build());
+
+        event.put(ModEntities.BIRD.get(), BirdEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -39,6 +39,14 @@ public class ModAttributeEvents
                 net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
                 net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 net.minecraft.world.entity.animal.Animal::checkAnimalSpawnRules,
+                net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.Operation.REPLACE
+        );
+
+        event.register(
+                org.Enderfan.vivarium.entities.ModEntities.BIRD.get(),
+                net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING,
+                BirdEntity::checkBirdSpawnRules,
                 net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.Operation.REPLACE
         );
     }

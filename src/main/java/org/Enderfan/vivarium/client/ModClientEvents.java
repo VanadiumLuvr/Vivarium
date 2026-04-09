@@ -5,12 +5,12 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.Enderfan.vivarium.Vivarium;
+import org.Enderfan.vivarium.client.renderers.BirdRenderer;
 import org.Enderfan.vivarium.client.renderers.GrasshopperRenderer;
-import org.Enderfan.vivarium.entities.ButterflyModel;
+import org.Enderfan.vivarium.entities.*;
 import org.Enderfan.vivarium.client.renderers.ButterflyRenderer;
 // Replace this with wherever your EntityType DeferredRegister is:
-import org.Enderfan.vivarium.entities.GrasshopperModel;
-import org.Enderfan.vivarium.entities.ModEntities;
+
 
 @Mod.EventBusSubscriber(modid = Vivarium.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents
@@ -22,6 +22,8 @@ public class ModClientEvents
         event.registerEntityRenderer(ModEntities.BUTTERFLY.get(), ButterflyRenderer::new);
 
         event.registerEntityRenderer(ModEntities.GRASSHOPPER.get(), GrasshopperRenderer::new);
+
+        event.registerEntityRenderer(ModEntities.BIRD.get(), BirdRenderer::new);
     }
 
     @SubscribeEvent
@@ -31,6 +33,8 @@ public class ModClientEvents
         event.registerLayerDefinition(ButterflyModel.LAYER_LOCATION, ButterflyModel::createBodyLayer);
 
         event.registerLayerDefinition(GrasshopperModel.LAYER_LOCATION, GrasshopperModel::createBodyLayer);
+
+        event.registerLayerDefinition(BirdModel.LAYER_LOCATION, BirdModel::createBodyLayer);
     }
 
 

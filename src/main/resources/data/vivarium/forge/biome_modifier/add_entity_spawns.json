@@ -13,6 +13,12 @@
       "weight": 25,
       "minCount": 1,
       "maxCount": 2
+    },
+    {
+      "type": "vivarium:bird",
+      "weight": 100,
+      "minCount": 1,
+      "maxCount": 2
     }
   ]
 }
