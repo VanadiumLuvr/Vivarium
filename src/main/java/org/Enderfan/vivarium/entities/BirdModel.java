@@ -77,11 +77,11 @@ public class BirdModel<T extends Entity> extends HierarchicalModel<T> {
 
 		PartDefinition R_tail = body.addOrReplaceChild("R_tail", CubeListBuilder.create(), PartPose.offset(0.0F, -1.0F, 2.0F));
 
-		PartDefinition R_tail_r1 = R_tail.addOrReplaceChild("R_tail_r1", CubeListBuilder.create().texOffs(-3, -2).addBox(-2.0F, -0.1874F, -0.1548F, 2.0F, 0.001F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, -0.4367F, -0.0395F, 0.0184F));
+		PartDefinition R_tail_r1 = R_tail.addOrReplaceChild("R_tail_r1", CubeListBuilder.create().texOffs(-3, -2).addBox(-2.0F, -0.1874F, -0.1548F, 2.0F, 0.005F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, -0.4367F, -0.0395F, 0.0184F));
 
 		PartDefinition L_tail = body.addOrReplaceChild("L_tail", CubeListBuilder.create(), PartPose.offset(0.0F, -1.0F, 2.0F));
 
-		PartDefinition L_tail_r1 = L_tail.addOrReplaceChild("L_tail_r1", CubeListBuilder.create().texOffs(-2, -2).mirror().addBox(0.0F, -0.1874F, -0.1548F, 2.0F, 0.001F, 4.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, -0.4367F, 0.0395F, -0.0184F));
+		PartDefinition L_tail_r1 = L_tail.addOrReplaceChild("L_tail_r1", CubeListBuilder.create().texOffs(-2, -2).mirror().addBox(0.0F, -0.1874F, -0.1548F, 2.0F, 0.005F, 4.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, -0.4367F, 0.0395F, -0.0184F));
 
 		PartDefinition body2 = partdefinition.addOrReplaceChild("body2", CubeListBuilder.create(), PartPose.offset(1.0F, 22.0F, 0.0F));
 
@@ -95,15 +95,19 @@ public class BirdModel<T extends Entity> extends HierarchicalModel<T> {
 	{
 		this.root().getAllParts().forEach(net.minecraft.client.model.geom.ModelPart::resetPose);
 
+		// Head tracking uses the native parameters
+		this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
+		this.head.xRot = headPitch * ((float)Math.PI / 180F);
+
 		if (entity instanceof BirdEntity bird)
 		{
-			// Speed multipliers applied to the final argument
+			// The body uses our custom flight math!
+			this.body.xRot = bird.flightPitch * ((float)Math.PI / 180F);
+
 			this.animate(bird.hopAnimationState, BirdModelAnimation.hop, ageInTicks, 0.75f);
 			this.animate(bird.flapAnimationState, BirdModelAnimation.flap, ageInTicks, 0.8f);
-
-			// Standard speeds for the rest
 			this.animate(bird.glideAnimationState, BirdModelAnimation.glide, ageInTicks, 1.0f);
-			this.animate(bird.peckAnimationState, BirdModelAnimation.peck, ageInTicks, 1.0f);
+			this.animate(bird.peckAnimationState, BirdModelAnimation.peck, ageInTicks, 0.7f);
 			this.animate(bird.peckFlyAnimationState, BirdModelAnimation.peck_fly, ageInTicks, 1.0f);
 		}
 	}
