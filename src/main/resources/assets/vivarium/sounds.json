@@ -32,6 +32,11 @@
   "grasshopper_fly":
   {
     "sounds": ["vivarium:grasshopper_fly"]
+  },
+
+  "bird_song":
+  {
+    "sounds": ["vivarium:bird_song"]
   }
 
 }

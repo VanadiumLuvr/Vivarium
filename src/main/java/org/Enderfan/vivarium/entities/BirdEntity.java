@@ -61,9 +61,17 @@ public class BirdEntity extends Animal
     protected void registerGoals()
     {
         this.goalSelector.addGoal(0, new net.minecraft.world.entity.ai.goal.FloatGoal(this));
-        this.goalSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(this, net.minecraft.world.entity.player.Player.class, 8.0F));
+
+        // Priority 1: MURDER. Always prioritize hunting.
         this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.MeleeAttackGoal(this, 2.5D, false));
+
+        // Priority 2: Perch and sing in the trees! (Speed 1.2, search within a 12 block radius)
+        this.goalSelector.addGoal(2, new BirdPerchAndSingGoal(this, 1.2D, 12));
+
+        // Priority 3: If no bugs or trees are around, just hop around on the ground
+        this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(this, net.minecraft.world.entity.player.Player.class, 8.0F));
+
         this.targetSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal<>(this, GrasshopperEntity.class, true));
         this.targetSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal<>(this, ButterflyEntity.class, true));
     }

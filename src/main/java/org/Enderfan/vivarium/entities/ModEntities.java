@@ -35,7 +35,7 @@ public class ModEntities
                     .build("grasshopper"));
 
     public static final RegistryObject<EntityType<BirdEntity>> BIRD =
-            ENTITIES.register("bird", () -> EntityType.Builder.of(BirdEntity::new, MobCategory.AMBIENT)
+            ENTITIES.register("bird", () -> EntityType.Builder.of(BirdEntity::new, MobCategory.CREATURE)
                     .sized(0.6f, 0.6f)
                     .clientTrackingRange(8)
                     .build("bird"));

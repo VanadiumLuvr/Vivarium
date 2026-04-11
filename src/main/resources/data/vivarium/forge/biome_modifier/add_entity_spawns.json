@@ -10,13 +10,13 @@
     },
     {
       "type": "vivarium:grasshopper",
-      "weight": 25,
+      "weight": 30,
       "minCount": 1,
       "maxCount": 2
     },
     {
       "type": "vivarium:bird",
-      "weight": 100,
+      "weight": 120,
       "minCount": 1,
       "maxCount": 2
     }
