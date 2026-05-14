@@ -14,6 +14,7 @@ public class BirdRenderer extends MobRenderer<BirdEntity, BirdModel<BirdEntity>>
 {
     // Make sure your texture PNG is actually saved at this exact file path!
     private static final ResourceLocation TEXTURE = new ResourceLocation(Vivarium.MODID, "textures/entity/bird.png");
+    private static final ResourceLocation DOVE_TEXTURE = new ResourceLocation("vivarium", "textures/entity/dove.png");
 
     public BirdRenderer(EntityRendererProvider.Context context)
     {
@@ -25,9 +26,15 @@ public class BirdRenderer extends MobRenderer<BirdEntity, BirdModel<BirdEntity>>
     {
         poseStack.scale(0.9f, 0.9f, 0.9f);
     }
+
     @Override
     public ResourceLocation getTextureLocation(BirdEntity entity)
     {
+        if (entity.getVariant() == 1)
+        {
+            return DOVE_TEXTURE;
+        }
+
         return TEXTURE;
     }
 }

@@ -29,4 +29,7 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> BIRD_SONG = SOUNDS.register("bird_song",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation("vivarium", "bird_song")));
+
+    public static final RegistryObject<SoundEvent> DOVE_SONG = SOUNDS.register("dove_song",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation("vivarium", "dove_song")));
 }

@@ -56,7 +56,7 @@ public class BirdPerchAndSingGoal extends MoveToBlockGoal
             if (this.singCooldown <= 0)
             {
                 this.bird.level().playSound(null, this.bird.blockPosition(),
-                        org.Enderfan.vivarium.ModSounds.BIRD_SONG.get(),
+                        this.bird.getSingingSound(),
                         SoundSource.AMBIENT,
                         1.0F,
                         this.bird.getVoicePitch());

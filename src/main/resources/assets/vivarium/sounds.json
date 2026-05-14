@@ -37,6 +37,11 @@
   "bird_song":
   {
     "sounds": ["vivarium:bird_song"]
+  },
+
+  "dove_song":
+  {
+    "sounds": ["vivarium:dove_song"]
   }
 
 }

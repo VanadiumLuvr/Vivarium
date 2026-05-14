@@ -1,10 +1,14 @@
 package org.Enderfan.vivarium.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -12,7 +16,9 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import org.Enderfan.vivarium.ModSounds;
 import org.jetbrains.annotations.Nullable;
 
 public class BirdEntity extends Animal
@@ -29,6 +35,68 @@ public class BirdEntity extends Animal
 
     public float flightPitch = 0.0f;
 
+    private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(BirdEntity.class, EntityDataSerializers.INT);
+
+    @Override
+    protected void defineSynchedData()
+    {
+        super.defineSynchedData();
+        // Default to 0 (Robin)
+        this.entityData.define(VARIANT_ID, 0);
+    }
+
+    public int getVariant()
+    {
+        return this.entityData.get(VARIANT_ID);
+    }
+
+    public void setVariant(int variant)
+    {
+        this.entityData.set(VARIANT_ID, variant);
+    }
+
+    // 2. Save and Load to NBT so the bird doesn't change after re-logging
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound)
+    {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Variant", this.getVariant());
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound)
+    {
+        super.readAdditionalSaveData(compound);
+        this.setVariant(compound.getInt("Variant"));
+    }
+
+    // 3. Randomize the variant when the entity first spawns into the world
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag)
+    {
+        if (this.random.nextFloat() < 0.5F)
+        {
+            this.setVariant(1);
+        }
+        else
+        {
+            this.setVariant(0);
+        }
+
+        return super.finalizeSpawn(level, difficulty, reason, spawnData, dataTag);
+    }
+
+    // 4. Create a helper method to return the correct sound
+    public SoundEvent getSingingSound()
+    {
+        if (this.getVariant() == 1)
+        {
+            return ModSounds.DOVE_SONG.get();
+        }
+
+        return ModSounds.BIRD_SONG.get();
+    }
+
     public BirdEntity(EntityType<? extends Animal> type, Level level)
     {
         super(type, level);
@@ -40,7 +108,7 @@ public class BirdEntity extends Animal
     {
         return Animal.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 8.0D)
-                .add(Attributes.FLYING_SPEED, 0.4D)
+                .add(Attributes.FLYING_SPEED, 1.5D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
                 .add(Attributes.FOLLOW_RANGE, 24.0D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
@@ -62,7 +130,7 @@ public class BirdEntity extends Animal
     {
         this.goalSelector.addGoal(0, new net.minecraft.world.entity.ai.goal.FloatGoal(this));
 
-        // Priority 1: MURDER. Always prioritize hunting.
+        // Priority 1: Always prioritize hunting.
         this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.MeleeAttackGoal(this, 2.5D, false));
 
         // Priority 2: Perch and sing in the trees! (Speed 1.2, search within a 12 block radius)
