@@ -91,4 +91,34 @@ public class StormEvent
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onPlayerSleep(net.minecraftforge.event.entity.player.PlayerSleepInBedEvent event)
+    {
+        net.minecraft.world.entity.player.Player player = event.getEntity();
+        Level level = player.level();
+
+        if (level.isThundering())
+        {
+            java.util.concurrent.atomic.AtomicBoolean preventSleep = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+            player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(guilt ->
+            {
+                if (guilt.getGuilt() >= VivariumConfig.STORM_THRESHOLD.get())
+                {
+                    preventSleep.set(true);
+                }
+            });
+
+            if (preventSleep.get())
+            {
+                // Send the precise singular text to the action bar.
+                // Setting the second argument to 'true' ensures it behaves exactly like the vanilla bed warning.
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("You may not rest now; there is a monster nearby"), true);
+
+                // OTHER_PROBLEM blocks the bed usage completely without displaying a vanilla message
+                event.setResult(net.minecraft.world.entity.player.Player.BedSleepingProblem.OTHER_PROBLEM);
+            }
+        }
+    }
 }
