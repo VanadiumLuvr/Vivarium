@@ -1,10 +1,12 @@
 package org.Enderfan.vivarium.entities;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -185,10 +187,48 @@ public class ButterflyEntity extends PathfinderMob
         this.flowerCooldown = 1200; // 1200 ticks = 60 seconds
     }
 
-    public static boolean checkButterflySpawnRules(net.minecraft.world.entity.EntityType<ButterflyEntity> type, net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType, net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random)
+    // --- CUSTOM SPAWN LOGIC ---
+    public static boolean checkButterflySpawnRules(EntityType<ButterflyEntity> type, net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType, BlockPos pos, net.minecraft.util.RandomSource random)
     {
-        // Must spawn on grass/dirt/sand, and it must be daytime/bright enough
-        return level.getBlockState(pos.below()).is(net.minecraft.tags.BlockTags.ANIMALS_SPAWNABLE_ON)
-                && level.getRawBrightness(pos, 0) > 8;
+        // 1. Must pass vanilla animal checks first (cast required since Butterfly is a PathfinderMob, not Animal)
+        @SuppressWarnings("unchecked")
+        EntityType<? extends Animal> animalType = (EntityType<? extends Animal>) (Object) type;
+
+        if (!Animal.checkAnimalSpawnRules(animalType, level, spawnType, pos, random)) return false;
+
+        // 2. Find the nearest player to check their localized ecosystem guilt
+        net.minecraft.world.entity.player.Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 128.0D, false);
+
+        if (player != null)
+        {
+            // Use AtomicBoolean so we can safely modify it inside the capability lambda
+            java.util.concurrent.atomic.AtomicBoolean canSpawn = new java.util.concurrent.atomic.AtomicBoolean(true);
+
+            player.getCapability(org.Enderfan.vivarium.server.GuiltProvider.PLAYER_GUILT).ifPresent(guiltCap -> {
+                int guilt = guiltCap.getGuilt();
+                double startFade = org.Enderfan.vivarium.config.VivariumConfig.FLOWER_CLOSE_THRESHOLD.get();
+                double endFade = org.Enderfan.vivarium.config.VivariumConfig.FLOWER_WILT_THRESHOLD.get();
+
+                if (guilt >= endFade)
+                {
+                    canSpawn.set(false); // 0% chance
+                }
+                else if (guilt > startFade)
+                {
+                    // Lerp from 1.0 (100%) at startFade to 0.0 (0%) at endFade
+                    double chance = 1.0 - ((guilt - startFade) / (endFade - startFade));
+                    if (random.nextDouble() > chance)
+                    {
+                        canSpawn.set(false);
+                    }
+                }
+            });
+
+            return canSpawn.get();
+        }
+
+        return true; // Default to spawning normally if no player is nearby
     }
+
+
 }

@@ -207,7 +207,7 @@ public class Events
                 }
 
                 newCap.setTriggeredFirstBleed(oldCap.hasTriggeredFirstBleed());
-
+                newCap.setTriggeredCaveIn(oldCap.hasTriggeredCaveIn());
                 newCap.hasDreamt(oldCap.hasDreamt());
             });
         });

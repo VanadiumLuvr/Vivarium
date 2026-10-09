@@ -320,8 +320,10 @@ public class BirdEntity extends Animal
     // --- CUSTOM SPAWN LOGIC ---
     public static boolean checkBirdSpawnRules(EntityType<? extends Animal> type, net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType, BlockPos pos, net.minecraft.util.RandomSource random)
     {
-        // 1. Must pass vanilla animal checks first (spawn on grass, proper lighting)
-        if (!Animal.checkAnimalSpawnRules(type, level, spawnType, pos, random)) return false;
+        @SuppressWarnings("unchecked")
+        EntityType<? extends Animal> animalType = (EntityType<? extends Animal>) (Object) type;
+
+        if (!Animal.checkAnimalSpawnRules(animalType, level, spawnType, pos, random)) return false;
 
         // 2. Find the nearest player to check their localized ecosystem guilt
         net.minecraft.world.entity.player.Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 128.0D, false);

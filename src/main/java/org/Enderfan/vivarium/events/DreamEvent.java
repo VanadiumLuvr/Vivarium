@@ -35,11 +35,11 @@ public class DreamEvent {
             {
                     "You and The World cannot live in harmony. It simply isn't possible.",
                     "You can refrain from hurting Her, but ultimately you're only prolonging Her pain.",
-                    "I'm not calling you a bad person; you just did what you had to in order to survive.",
-                    "But if you want to end the cycle of torment, there is unfortunately only one option:",
+                    "...",
+                    "If you want to end the cycle of torment, there is unfortunately only one option:",
                     "One of you must die.",
                     "You may travel to the World's Heart and put Her out of Her misery.",
-                    "However, doing this will mean life will become unsustainable, and the resources you rely on will wither away.",
+                    "However, doing this means life will become unsustainable, and the resources you rely on will wither away.",
                     "Alternatively, you may take your own life, and let The World heal.",
                     "Of course, in Her kindness, She will bring you back, no matter how many times you die.",
                     "Unless you use this..."
@@ -179,7 +179,15 @@ public class DreamEvent {
 
                 if (distanceWalked >= (currentStage + 1) * 15 && currentStage < DREAM_MESSAGES.length)
                 {
-                    player.sendSystemMessage(Component.literal(DREAM_MESSAGES[currentStage]).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+                    String messageToFormat = DREAM_MESSAGES[currentStage];
+
+                    // Intercept index 8 if they are playing on Hardcore mode
+                    if (currentStage == 8 && player.level().getLevelData().isHardcore())
+                    {
+                        messageToFormat = "Of course, this is trivial for yourself, but you cannot kill The World.";
+                    }
+
+                    player.sendSystemMessage(Component.literal(messageToFormat).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
                     persistentData.putInt("vivarium_dream_stage", currentStage + 1);
                 }
 
@@ -224,7 +232,10 @@ public class DreamEvent {
     {
         ServerLevel serverLevel = (ServerLevel) player.level();
 
-        player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap -> cap.hasDreamt = true);
+        player.getCapability(GuiltProvider.PLAYER_GUILT).ifPresent(cap -> {
+            cap.hasDreamt = true;
+            cap.setTriggeredCaveIn(true); // Disable the cave-in forever
+        });
 
         net.minecraft.nbt.ListTag savedInv = new net.minecraft.nbt.ListTag();
         player.getInventory().save(savedInv);

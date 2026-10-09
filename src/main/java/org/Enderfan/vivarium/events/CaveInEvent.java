@@ -49,12 +49,12 @@ public class CaveInEvent {
 
 
                 // The Day 2 Underground Event: The Collapse
-                if (stoneMined >= threshold && isUnderground && !persistentData.getBoolean("cave_in_triggered"))
+                if (stoneMined >= threshold && isUnderground && !persistentData.getBoolean("cave_in_triggered") && !guilt.hasDreamt())
                 {
                     if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer)
                     {
                         // make it so this only triggers once
-                        persistentData.putBoolean("cave_in_triggered", true);
+                        guilt.setTriggeredCaveIn(true);
 
                         // 1. The deafening crack
                         serverLevel.playSound(null, event.getPos(), net.minecraft.sounds.SoundEvents.WITHER_BREAK_BLOCK, SoundSource.BLOCKS, 2.0f, 0.5f);
