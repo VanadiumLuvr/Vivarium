@@ -32,54 +32,83 @@ public class HeatWaveEvent
                     data.putLong("vivarium_heat_wave_start", level.getGameTime());
                 }
 
-                long elapsed = level.getGameTime() - data.getLong("vivarium_heat_wave_start");
+                // Check if it is actively raining and the player is exposed to the sky
+                boolean isRainingOnPlayer = level.isRaining() && level.canSeeSky(player.blockPosition());
 
-                // Blast this to the client every 2 seconds to keep the mirages rendering, even if they relog
-                if (player.tickCount % 40 == 0)
+                if (isRainingOnPlayer)
                 {
-                    ModMessages.sendToPlayer(new HeatWaveStatePacket(true), player);
-                }
+                    // 1. Pause the heat wave timer by incrementing the start time by 1 each tick
+                    data.putLong("vivarium_heat_wave_start", data.getLong("vivarium_heat_wave_start") + 1);
 
-                if (elapsed >= 24000)
-                {
-                    data.putBoolean("vivarium_heat_wave_done", true);
-                    data.remove("vivarium_heat_wave_start");
-                    data.remove("vivarium_heat_level");
-                    ModMessages.sendToPlayer(new HeatSyncPacket(0), player);
-                    // Tell the client the event is over so mirages stop
-                    ModMessages.sendToPlayer(new HeatWaveStatePacket(false), player);
+                    // 2. If mirages were active, turn them off immediately
+                    if (!data.getBoolean("vivarium_heat_wave_rain_paused"))
+                    {
+                        data.putBoolean("vivarium_heat_wave_rain_paused", true);
+                        ModMessages.sendToPlayer(new HeatWaveStatePacket(false), player);
+                    }
+
+                    // 3. Let the player cool down in the rain
+                    coolDown(data, player);
                 }
                 else
                 {
-                    if (!data.contains("vivarium_saved_inv"))
+                    // If rain just stopped, resume the mirages state
+                    if (data.getBoolean("vivarium_heat_wave_rain_paused"))
                     {
-                        if (level.isDay() && level.canSeeSky(player.blockPosition()) && player.getArmorValue() > 0)
-                        {
-                            int heat = data.getInt("vivarium_heat_level");
-                            int newHeat = Math.min(heat + 1, 400);
+                        data.putBoolean("vivarium_heat_wave_rain_paused", false);
+                        ModMessages.sendToPlayer(new HeatWaveStatePacket(true), player);
+                    }
 
-                            // If the heat changed, sync it to the UI!
-                            if (heat != newHeat)
-                            {
-                                data.putInt("vivarium_heat_level", newHeat);
-                                ModMessages.sendToPlayer(new HeatSyncPacket(newHeat), player);
-                            }
+                    long elapsed = level.getGameTime() - data.getLong("vivarium_heat_wave_start");
 
-                            if (newHeat >= 400 && player.tickCount % 60 == 0)
-                            {
-                                player.hurt(level.damageSources().onFire(), 1.0f);
-                            }
-                        }
-                        else
+                    // Blast this to the client every 2 seconds to keep the mirages rendering, even if they relog
+                    if (player.tickCount % 40 == 0)
+                    {
+                        ModMessages.sendToPlayer(new HeatWaveStatePacket(true), player);
+                    }
+
+                    if (elapsed >= 12000)
+                    {
+                        data.putBoolean("vivarium_heat_wave_done", true);
+                        data.remove("vivarium_heat_wave_start");
+                        data.remove("vivarium_heat_level");
+                        data.remove("vivarium_heat_wave_rain_paused");
+                        ModMessages.sendToPlayer(new HeatSyncPacket(0), player);
+                        // Tell the client the event is over so mirages stop
+                        ModMessages.sendToPlayer(new HeatWaveStatePacket(false), player);
+                    }
+                    else
+                    {
+                        if (!data.contains("vivarium_saved_inv"))
                         {
-                            // Notice we now pass the 'player' variable into the coolDown method
-                            coolDown(data, player);
+                            if (level.isDay() && level.canSeeSky(player.blockPosition()) && player.getArmorValue() > 0)
+                            {
+                                int heat = data.getInt("vivarium_heat_level");
+                                int newHeat = Math.min(heat + 1, 400);
+
+                                // If the heat changed, sync it to the UI!
+                                if (heat != newHeat)
+                                {
+                                    data.putInt("vivarium_heat_level", newHeat);
+                                    ModMessages.sendToPlayer(new HeatSyncPacket(newHeat), player);
+                                }
+
+                                if (newHeat >= 400 && player.tickCount % 60 == 0)
+                                {
+                                    player.hurt(level.damageSources().onFire(), 1.0f);
+                                }
+                            }
+                            else
+                            {
+                                coolDown(data, player);
+                            }
                         }
                     }
                 }
             }
             else
             {
+                data.remove("vivarium_heat_wave_rain_paused");
                 coolDown(data, player);
             }
         });
