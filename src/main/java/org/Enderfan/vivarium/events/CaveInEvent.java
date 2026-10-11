@@ -49,7 +49,7 @@ public class CaveInEvent {
 
 
                 // The Day 2 Underground Event: The Collapse
-                if (stoneMined >= threshold && isUnderground && !persistentData.getBoolean("cave_in_triggered") && !guilt.hasDreamt())
+                if (stoneMined >= threshold && isUnderground && !guilt.hasTriggeredCaveIn() && !guilt.hasDreamt())
                 {
                     if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer)
                     {
